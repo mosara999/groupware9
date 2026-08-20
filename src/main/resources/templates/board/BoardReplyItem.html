@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="item(replyInfo)"
+          th:with="marginPx=${20 * T(java.lang.Integer).parseInt(replyInfo.redepth)}">
+
+<div th:class="|panel panel-default replyParent${replyInfo.reparent}|" th:id="|replyItem${replyInfo.reno}|" th:style="|margin-left: ${marginPx}px;|">
+	<div class="panel-body">
+		<div class="pull-left photoOutline">
+			<a th:if="${replyInfo.photo == null}" href="" class="img-circle">
+				<i class="glyphicon glyphicon-user noPhoto"></i>
+			</a>
+			<img th:if="${replyInfo.photo != null}" class="img-circle" th:src="@{fileDownload(downname=${replyInfo.photo})}" th:title="${replyInfo.rewriter}"/>
+		</div>
+	    <div class="photoTitle">
+			<div>
+				<span th:text="${replyInfo.rewriter}"></span> <span th:text="${replyInfo.redate}"></span>
+				<th:block th:if="${replyInfo.userno == session.userno}">
+					<a th:href="|javascript:fn_replyDelete('${replyInfo.reno}')|" th:title="#{common.btnDelete}"><span class="text-muted"><i class="fa fa-times fa-fw"></i></span></a>
+					<a th:href="|javascript:fn_replyUpdate('${replyInfo.reno}')|" th:title="#{common.btnUpdate}"><span class="text-muted"><i class="fa fa-edit fa-fw"></i></span></a>
+				</th:block>
+				<a th:href="|javascript:fn_replyReply('${replyInfo.reno}')|" th:title="#{common.btnReply}"><span class="text-muted"><i class="fa fa-comments fa-fw"></i></span></a>
+			</div>
+			<div th:id="|reply${replyInfo.reno}|" th:utext="${replyInfo.rememoByHTML}"></div>
+		</div>
+	</div>
+</div>
+
+</th:block>
+</body>
+</html>

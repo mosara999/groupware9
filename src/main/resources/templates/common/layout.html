@@ -29,7 +29,9 @@
     <script th:src="@{/css/sb-admin/metisMenu.min.js}"></script>
     <script th:src="@{/css/sb-admin/sb-admin-2.js}"></script>
     <script th:src="@{/js/project9.js}"></script>
-    <th:block th:if="${extraHead != null}" th:replace="${extraHead}"></th:block>
+    <th:block th:if="${extraHead != null}">
+        <th:block th:replace="${extraHead}"></th:block>
+    </th:block>
 </head>
 
 <body>

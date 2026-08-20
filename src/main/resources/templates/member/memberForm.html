@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{common/layout :: layout(~{::title}, ~{::section})}">
+      th:replace="~{common/layout :: layout(title=~{::title}, content=~{::section}, extraHead=${null})}">
 
 <head>
     <title th:text="#{common.pageTitle}">Groupware</title>

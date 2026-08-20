@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{common/layout :: layout(title=~{::title}, content=~{::section}, extraHead=${null})}">
+
+<head>
+    <title th:text="#{common.pageTitle}">Groupware</title>
+</head>
+
+<body>
+<section>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header"><i class="fa fa-files-o fa-fw"></i> <span th:text="${bgInfo.bgname}"></span></h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+
+            <!-- /.row -->
+            <div class="row">
+				<div class="panel panel-default">
+                    <div class="panel-heading">
+                        	<span th:text="${boardInfo.brdtitle}"></span> [ <span th:text="${boardInfo.brdwriter}"></span> <span th:text="${boardInfo.brddate}"></span>]
+                        <span class="pull-right text-muted">
+                        	<i class="fa fa-eye fa-fw"></i> <span th:text="${boardInfo.brdhit}"></span>
+                        	<i class="fa fa-thumbs-o-up fa-fw"></i> <span id="boardLike" th:text="${boardInfo.brdlike}"></span>
+                        </span>
+                    </div>
+                    <div class="panel-body">
+                        <p th:utext="${boardInfo.brdmemo}"></p>
+                    </div>
+                    <div class="panel-footer" th:if="${not #lists.isEmpty(listview)}">
+                    	<th:block th:each="file : ${listview}">
+	           				<a th:href="@{fileDownload(filename=${file.filename},downname=${file.realname})}" th:text="${file.filename}"></a>
+							<span th:text="${file.size2String()}"></span><br/>
+						</th:block>
+                     </div>
+                </div>
+                <button class="btn btn-outline btn-primary" th:attr="data-url=@{boardList(bgno=${bgno})}" onclick="fn_moveToURL(this.getAttribute('data-url'))" th:text="#{common.btnList}"></button>
+				<th:block th:if="${boardInfo.userno == session.userno}">
+	                <button class="btn btn-outline btn-primary"
+	                        th:attr="data-url=@{boardDelete(bgno=${boardInfo.bgno},brdno=${boardInfo.brdno})},data-label=#{common.btnDelete}"
+	                        onclick="fn_moveToURL(this.getAttribute('data-url'), this.getAttribute('data-label'))" th:text="#{common.btnDelete}"></button>
+	                <button class="btn btn-outline btn-primary"
+	                        th:attr="data-url=@{boardForm(brdno=${boardInfo.brdno})}"
+	                        onclick="fn_moveToURL(this.getAttribute('data-url'))" th:text="#{common.btnUpdate}"></button>
+				</th:block>
+
+				<button th:if="${boardInfo.brdlikechk == null}" id="boardLikeBtn" class="btn btn-outline btn-primary pull-right"
+				        th:attr="data-brdno=${boardInfo.brdno}" onclick="fn_addBoardLike(this.getAttribute('data-brdno'))">
+				    <i class="fa fa-thumbs-o-up fa-fw"></i> <span th:text="#{common.like}"></span></button>
+
+				<p>&nbsp;</p>
+				<input type="hidden" id="brdno" name="brdno" th:value="${boardInfo.brdno}">
+
+				<div class="panel panel-default" th:if="${bgInfo.bgreply == 'Y'}">
+                    <div class="panel-body">
+								<div class="col-lg-6">
+									<textarea class="form-control" id="rememo1" name="rememo" maxlength="500" th:placeholder="#{msg.inputReply}"></textarea>
+								</div>
+								<div class="col-lg-6">
+	                				<button class="btn btn-outline btn-primary" onclick="fn_formSubmit()" th:text="#{common.btnSave}"></button>
+								</div>
+                    </div>
+                </div>
+				<div id="replyList" th:if="${bgInfo.bgreply == 'Y'}">
+					<th:block th:each="item : ${replylist}">
+						<div th:replace="~{board/BoardReplyItem :: item(${item})}"></div>
+					</th:block>
+				</div>
+
+				<div id="replyDiv" style="width: 99%; display:none">
+						<input type="hidden" id="brdno2" name="brdno" th:value="${boardInfo.brdno}">
+						<input type="hidden" id="reno2" name="reno">
+						<div class="col-lg-6">
+							<textarea class="form-control" id="rememo2" name="rememo2" rows="3" maxlength="500"></textarea>
+						</div>
+						<div class="col-lg-2 pull-left">
+               				<button class="btn btn-outline btn-primary" onclick="fn_replyUpdateSave()" th:text="#{common.btnSave}"></button>
+               				<button class="btn btn-outline btn-primary" onclick="fn_replyUpdateCancel()" th:text="#{common.btnCancel}"></button>
+						</div>
+				</div>
+
+				<div id="replyDialog" style="width: 99%; display:none">
+						<input type="hidden" id="brdno3" name="brdno" th:value="${boardInfo.brdno}">
+						<input type="hidden" id="reno3" name="reno">
+						<input type="hidden" id="reparent3" name="reparent">
+						<div class="col-lg-6">
+							<textarea class="form-control" id="rememo3" name="rememo3" rows="3" maxlength="500"></textarea>
+						</div>
+						<div class="col-lg-2 pull-left">
+               				<button class="btn btn-outline btn-primary" onclick="fn_replyReplySave()" th:text="#{common.btnSave}"></button>
+               				<button class="btn btn-outline btn-primary" onclick="fn_replyReplyCancel()" th:text="#{common.btnCancel}"></button>
+						</div>
+				</div>
+
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+    function fn_formSubmit(){
+    	if ( ! chkInputValue("#rememo1", /*[[#{board.contents}]]*/ "내용")) return;
+
+    	$.ajax({
+    		url: "boardReplySave",
+    		dataType: "html",
+    		type:"post",
+    		data : {brdno:$("#brdno").val(), rememo: $("#rememo1").val()},
+    		success: function(result){
+    			if (result!=="") {
+    				$("#rememo1").val("");
+    				$("#replyList").append(result);
+    				alert(/*[[#{msg.boardSave}]]*/ "저장되었습니다.");
+    			} else{
+    				alert(/*[[#{msg.err.server}]]*/ "서버에 오류가 있어서 저장되지 않았습니다.");
+    			}
+    		}
+    	})
+    }
+
+    function fn_replyDelete(reno){
+    	fn_confirm(/*[[#{ask.Delete}]]*/ "삭제하시겠습니까?", function(){
+    		$.ajax({
+    			url: "boardReplyDelete",
+    			type:"post",
+    			data: {"reno": reno},
+    			success: function(result){
+    				if (result=="OK") {
+    					$("#replyItem"+reno).remove();
+    					alert(/*[[#{msg.boardDelete}]]*/ "삭제되었습니다.");
+    				} else
+    				if (result=="Fail") {
+    					alert(/*[[#{msg.err.delete4reply}]]*/ "댓글이 있어서 삭제할 수 없습니다.");
+    				} else {
+    					alert(/*[[#{msg.err.delete4error}]]*/ "오류가 있어서 삭제할 수 없습니다.");
+    				}
+    			}
+    		})
+    	});
+    }
+
+    var updateReno = updateRememo = null;
+    function fn_replyUpdate(reno){
+    	hideDiv("#replyDialog");
+
+    	if (updateReno) {
+    		$("#replyDiv").appendTo(document.body);
+    		$("#reply"+updateReno).text(updateRememo);
+    	}
+    	updateReno   = reno;
+    	updateRememo = $("#reply"+reno).html();
+
+    	$("#reno2").val(reno);
+    	$("#rememo2").val( html2Text(updateRememo) );
+    	$("#reply"+reno).text("");
+    	$("#replyDiv").appendTo($("#reply"+reno));
+    	$("#replyDiv").show();
+    	$("#rememo2").focus();
+    }
+
+    function fn_replyUpdateSave(){
+    	if ( ! chkInputValue("#rememo2", /*[[#{board.contents}]]*/ "내용")) return;
+
+    	$.ajax({
+    		url: "boardReplySave",
+    		type:"post",
+    		data : {brdno:$("#brdno").val(), reno: updateReno, rememo: $("#rememo2").val()},
+    		success: function(result){
+    			if (result!=="") {
+    				$("#replyDiv").appendTo(document.body);
+    				$("#replyDiv").hide();
+    				$("#reply"+updateReno).html( text2Html($("#rememo2").val()) );
+    				alert(/*[[#{msg.boardSave}]]*/ "저장되었습니다.");
+    			} else{
+    				alert(/*[[#{msg.err.save4error}]]*/ "오류가 있어서 저장되지 않았습니다.");
+    			}
+    			updateReno = updateRememo = null;
+    		}
+    	})
+    }
+
+    function fn_replyUpdateCancel(){
+    	hideDiv("#replyDiv");
+
+    	$("#reply"+updateReno).html(updateRememo);
+    	updateReno = updateRememo = null;
+    }
+
+    function hideDiv(id){
+    	$(id).hide();
+    	$(id).appendTo(document.body);
+    }
+
+    function fn_replyReply(reno){
+    	$("#replyDialog").show();
+
+    	if (updateReno) {
+    		fn_replyUpdateCancel();
+    	}
+
+    	$("#reparent3").val(reno);
+    	$("#rememo3").val("");
+    	$("#replyDialog").appendTo($("#reply"+reno));
+    	$("#rememo3").focus();
+    }
+
+    function fn_replyReplyCancel(){
+    	hideDiv("#replyDialog");
+    }
+
+    function fn_replyReplySave(){
+    	if ( ! chkInputValue("#rememo3", /*[[#{board.contents}]]*/ "내용")) return;
+
+    	$.ajax({
+    		url: "boardReplySave",
+    		type:"post",
+    		data : {brdno:$("#brdno").val(), reno: $("#reno3").val(), reparent: $("#reparent3").val(), rememo: $("#rememo3").val()},
+    		success: function(result){
+    			if (result!=="") {
+    				var parent = $("#reparent3").val();
+    				var parentNodes = $(".replyParent"+parent);
+    				if (parentNodes.length===0) {
+    					$("#replyItem"+parent).after(result);
+    				}else {
+    					parentNodes.last().after(result);
+    				}
+    				hideDiv("#replyDialog");
+    				alert(/*[[#{msg.boardSave}]]*/ "저장되었습니다.");
+    				$("#rememo3").val("");
+    			} else{
+    				alert(/*[[#{msg.err.server}]]*/ "서버에 오류가 있어서 저장되지 않았습니다.");
+    			}
+    		}
+    	})
+    }
+
+    function fn_addBoardLike(brdno){
+    	$.ajax({
+    		url: "addBoardLike",
+    		type:"post",
+    		data : {brdno: brdno},
+    		success: function(result){
+    			if (result==="OK") {
+    				$("#boardLikeBtn").hide();
+    				$("#boardLike").text( parseInt($("#boardLike").text())+1);
+    			}
+    		}
+    	})
+    }
+    /*]]>*/
+    </script>
+</section>
+</body>
+
+</html>
