@@ -30,17 +30,21 @@ public class FileDownload {
         String filename = request.getParameter("filename");
         String downname = request.getParameter("downname");
         String realPath = "";
-        
+
+        if (downname == null || !downname.matches("[a-zA-Z0-9._-]+")) {
+            return;
+        }
+
         if (filename == null || "".equals(filename)) {
             filename = downname;
         }
-        
+
         try {
             filename = URLEncoder.encode(filename, "UTF-8");
         } catch (UnsupportedEncodingException ex) {
             LOGGER.error("UnsupportedEncodingException");
         }
-        
+
         realPath = path + downname.substring(0,4) + "/" + downname;
 
         File file1 = new File(realPath);

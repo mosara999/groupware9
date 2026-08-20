@@ -113,6 +113,7 @@ public class UserCtr {
         String userno = request.getParameter("userno");
         
         UserVO userInfo = userSvc.selectUserOne(userno);
+        userInfo.setUserpw(null);
 
         UtilEtc.responseJsonValue(response, userInfo);
     }

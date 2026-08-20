@@ -55,9 +55,9 @@ public class LoginCtr {
         session.setAttribute("usernm",  mdo.getUsernm());
         
         if ("Y".equals(loginInfo.getRemember())) {
-            set_cookie("sid", loginInfo.getUserid(), response);
-        } else { 
-            set_cookie("sid", "", response);       
+            set_cookie("sid", loginInfo.getUserid(), request, response);
+        } else {
+            set_cookie("sid", "", request, response);
         }
         
         return "redirect:/index";
@@ -97,12 +97,14 @@ public class LoginCtr {
     /**
      * 쿠키 저장.     
      */
-    public static void set_cookie(String cid, String value, HttpServletResponse res) {
+    public static void set_cookie(String cid, String value, HttpServletRequest req, HttpServletResponse res) {
 
         Cookie ck = new Cookie(cid, value);
         ck.setPath("/");
         ck.setMaxAge(cookieExpire);
-        res.addCookie(ck);        
+        ck.setHttpOnly(true);
+        ck.setSecure(req.isSecure());
+        res.addCookie(ck);
     }
 
     /**
