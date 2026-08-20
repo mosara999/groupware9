@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{common/layout :: layout(title=~{::title}, content=~{::section}, extraHead=${null})}">
+
+<head>
+    <title th:text="#{common.pageTitle}">Groupware</title>
+</head>
+
+<body>
+<section>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header"><i class="fa fa-calendar fa-fw"></i> 월간 일정</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+
+
+            <!-- /.row -->
+			<div class="row">
+			     <div class="col-lg-10">
+			         <h1>
+			         <a href="#" th:attr="data-url=@{schList(year=${searchVO.year},month=${T(java.lang.Integer).parseInt(searchVO.month) - 1})}" onclick="fn_moveToURL(this.getAttribute('data-url'), '')"><i class="fa fa-angle-left fa-fw"></i></a>
+
+			         <span th:text="${searchVO.year}"></span>년 <span th:text="${searchVO.month}"></span>월
+			         <a href="#" th:attr="data-url=@{schList(year=${searchVO.year},month=${T(java.lang.Integer).parseInt(searchVO.month) + 1})}" onclick="fn_moveToURL(this.getAttribute('data-url'), '')"><i class="fa fa-angle-right fa-fw"></i></a>
+			         </h1>
+			     </div>
+			     <div class="col-lg-2">
+	                	<button class="btn btn-outline btn-primary" style="margin-top:20px;" onclick="fn_moveToURL('schForm', '')" >일정추가</button>
+			     </div>
+            </div>
+            <!-- /.row -->
+			<div class="calendarPanel">
+			<div class="calendarRow" >
+				<div class="calendarColumnHead" th:each="d : ${#strings.arraySplit('일,월,화,수,목,금,토', ',')}" th:text="${d}"></div>
+			</div>
+			<th:block th:with="dow=${dayofweek}, cnt=${#lists.size(listview)}, totalRows=${(dow + cnt + 6) / 7}">
+				<div class="calendarRow" th:each="w : ${#numbers.sequence(0, totalRows - 1)}">
+					<th:block th:each="col : ${#numbers.sequence(0, 6)}" th:with="idx=${w * 7 + col}">
+			             <div class="calendarColumnBox" th:if="${idx &lt; dow or idx &gt;= dow + cnt}">
+			             	<div class="calendarColumnDay">
+			             	</div>
+			             </div>
+			             <div class="calendarColumnBox" th:if="${idx >= dow and idx &lt; dow + cnt}" th:with="day=${listview[idx - dow]}">
+			             	<div class="calendarColumnDay" th:classappend="${day.cddayofweek == 1} ? 'calendarColumnSunDay' : ''">
+			             		<a th:href="@{schForm(cddate=${day.cddate})}" th:text="${day.cddd}"></a>
+			             	</div>
+							<div class="calendarDay" th:each="ev : ${day.list}"
+							     th:attr="data-ssno=${ev.ssno},data-cddate=${day.cddate}"
+							     onmouseover="calendarDayMouseover(event, this.getAttribute('data-ssno'), this.getAttribute('data-cddate'))" onmouseout="calendarDayMouseout()">
+				             	<a th:if="${ev.ssno != null and ev.userno == session.userno}"
+				             	   th:href="@{schForm(ssno=${ev.ssno},sdseq=${ev.sdseq})}" th:text="${ev.sstitle}"></a>
+				             	<a th:if="${ev.ssno != null and ev.userno != session.userno}"
+				             	   th:href="@{schRead(ssno=${ev.ssno},sdseq=${ev.sdseq})}" th:text="${ev.sstitle}"></a>
+				             	<span th:if="${ev.ssno == null}" th:style="|color:${ev.fontcolor}|" th:text="${ev.sstitle}"></span>
+			             	</div>
+						</div>
+					</th:block>
+				</div>
+			</th:block>
+			</div>
+			<p>&nbsp;</p>
+			<p>&nbsp;</p>
+			<p>&nbsp;</p>
+            <!-- /.row -->
+
+    <script>
+    function fn_formSubmit(){
+    	document.form1.submit();
+    }
+
+    var oldno = null;
+    function calendarDayMouseover(event, ssno, cddate){
+    	if (!ssno) {
+    		return;
+    	}
+
+    	$(".calendarTooltip").css({left: event.x+"px", top: event.y+"px"});
+    	$(".calendarTooltip").show();
+    	if (oldno===ssno) return;
+    	oldno=ssno;
+        $.ajax({
+        	url: "schRead4Ajax",
+        	cache: false,
+        	data: { ssno : ssno, cddate:cddate },
+    	    success: function(result){
+    	    	$(".calendarTooltip").html(result);
+    		}
+        });
+    }
+
+    function calendarDayMouseout(){
+    	$(".calendarTooltip").hide();
+    }
+    </script>
+</section>
+<div class="calendarTooltip"></div>
+</body>
+
+</html>

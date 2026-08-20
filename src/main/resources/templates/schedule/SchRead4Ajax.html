@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="panel panel-default">
+     <div class="panel-body">
+     	<div class="row form-group">
+             <label class="col-lg-2">일정명</label>
+             <div class="col-lg-10" th:text="${schInfo?.sstitle}"></div>
+         </div>
+     	<div class="row form-group">
+             <label class="col-lg-2">구분</label>
+             <div class="col-lg-10" th:text="${schInfo?.sstype}"></div>
+         </div>
+     	<div class="row form-group">
+             <label class="col-lg-2">일시</label>
+             <div class="col-lg-10">
+             	<th:block th:if="${schInfo != null and schInfo.ssrepeattype == '1'}"
+             	          th:text="|${schInfo.ssstartdate} ${schInfo.ssstarthour}:${schInfo.ssstartminute} ~ ${schInfo.ssstartdate} ${schInfo.ssendhour}:${schInfo.ssendminute}|"></th:block>
+	            <th:block th:if="${schInfo != null and schInfo.ssrepeattype != '1'}" th:text="${cddate}"></th:block>
+              </div>
+         </div>
+     	<div class="row form-group">
+             <label class="col-lg-2">반복</label>
+             <div class="col-lg-10" th:text="${schInfo?.ssrepeattypenm}"></div>
+         </div>
+     	<div class="row form-group">
+             <label class="col-lg-2">공개</label>
+             <div class="col-lg-10" th:text="${schInfo?.ssisopen}"></div>
+         </div>
+     	<div class="row form-group">
+             <label class="col-lg-2">작성자</label>
+             <div class="col-lg-10" th:text="${schInfo?.usernm}"></div>
+         </div>
+     	<div class="row form-group">
+             <label class="col-lg-2">내용</label>
+             <div class="col-lg-10" style="max-height:100px; overflow:hidden" th:text="${schInfo?.sscontents}"></div>
+         </div>
+     </div>
+ </div>
+</body>
+</html>

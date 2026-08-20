@@ -70,4 +70,14 @@ dependencies {
     implementation 'com.sun.mail:javax.mail:1.6.2'
 
     implementation 'cglib:cglib:3.3.0'
+
+    // TDD: MockMvc + JUnit 5 (Jupiter) via Spring Boot's own test starter. Tests run as
+    // integration tests against the same dev MariaDB the app itself uses (no separate test
+    // datasource/profile exists) - see AGENTS.md's DB setup section, Docker DB must be up.
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+}
+
+test {
+    useJUnitPlatform()
 }

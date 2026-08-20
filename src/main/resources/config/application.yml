@@ -18,4 +18,4 @@ spring:
     # Only these view names are served by Thymeleaf; every other view name falls through to the
     # JSP InternalResourceViewResolver (applicationContext.xml) while the JSP->Thymeleaf migration
     # is in progress. Add a view name here as each screen gets converted.
-    view-names: member/memberForm,board/BoardList,board/BoardRead,board/BoardReadAjax4Reply,board/BoardListAll,board/BoardForm,board/BoardGroupFail
+    view-names: member/memberForm,board/BoardList,board/BoardRead,board/BoardReadAjax4Reply,board/BoardListAll,board/BoardForm,board/BoardGroupFail,schedule/SchList,schedule/SchForm,schedule/SchRead,schedule/SchRead4Ajax
