@@ -633,3 +633,47 @@ _div {border:1px solid #cccccc}
 .schForm .form-group {
 	margin-bottom: 16px;
 }
+
+/* 일정 읽기 화면 (schedule/SchRead.jsp) - .schRead 안에서만 적용, 다른 화면의 공용 패널 스타일에는 영향 없음 */
+.schRead.panel {
+	border: 1px solid #E3E3E0;
+	border-radius: 8px;
+	box-shadow: none;
+}
+.schRead .panel-body {
+	padding: 24px;
+}
+.schRead .form-group {
+	margin-bottom: 16px;
+}
+.schRead label {
+	color: #9B9A97;
+	font-weight: 600;
+	font-size: 14px;
+}
+.schRead .form-group > div {
+	color: #37352F;
+	font-size: 16px;
+}
+
+/* 일정 읽기 팝업 (schedule/SchRead4Ajax.jsp, calendarTooltip에 로드됨) - 기존 .calendarTooltip 범위로 한정, 별도 클래스 불필요 */
+.calendarTooltip .panel {
+	border: none;
+	box-shadow: none;
+	margin-bottom: 0;
+}
+.calendarTooltip .panel-body {
+	padding: 16px;
+}
+.calendarTooltip .form-group {
+	margin-bottom: 10px;
+}
+.calendarTooltip label {
+	color: #9B9A97;
+	font-weight: 600;
+	font-size: 12px;
+}
+.calendarTooltip .form-group > div {
+	color: #37352F;
+	font-size: 13px;
+}
