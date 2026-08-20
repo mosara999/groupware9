@@ -9,16 +9,23 @@ function chkInputValue(id, msg){
 
 function fn_moveToURL(url, msg){
 	if (msg) {
-		if (!confirm( msg + " 하시겠습니까??")) return;
+		fn_confirm(msg + " 하시겠습니까??", function(){
+			location.href=url;
+		});
+		return;
 	}
 	location.href=url;
 }
 
 function fn_moveToURLbyForm(formid, url, msg){
-	if (msg) {
-		if (!confirm( msg + " 하시겠습니까??")) return;
-	}
 	var form = document.getElementById(formid);
+	if (msg) {
+		fn_confirm(msg + " 하시겠습니까??", function(){
+			form.action=url;
+			form.submit();
+		});
+		return;
+	}
 	form.action=url;
 	form.submit();
 }

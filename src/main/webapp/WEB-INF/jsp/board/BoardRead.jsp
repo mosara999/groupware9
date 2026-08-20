@@ -52,25 +52,24 @@ function fn_formSubmit(){
 }
 
 function fn_replyDelete(reno){
-	if (!confirm("<s:message code="ask.Delete"/>")) {
-		return;
-	}
-	$.ajax({
-		url: "boardReplyDelete",
-		type:"post", 
-		data: {"reno": reno},
-		success: function(result){
-			if (result=="OK") {
-				$("#replyItem"+reno).remove();
-				alert("<s:message code="msg.boardDelete"/>");
-			} else
-			if (result=="Fail") {
-				alert("<s:message code="msg.err.delete4reply"/>");
-			} else {
-				alert("<s:message code="msg.err.delete4error"/>");
+	fn_confirm("<s:message code="ask.Delete"/>", function(){
+		$.ajax({
+			url: "boardReplyDelete",
+			type:"post",
+			data: {"reno": reno},
+			success: function(result){
+				if (result=="OK") {
+					$("#replyItem"+reno).remove();
+					alert("<s:message code="msg.boardDelete"/>");
+				} else
+				if (result=="Fail") {
+					alert("<s:message code="msg.err.delete4reply"/>");
+				} else {
+					alert("<s:message code="msg.err.delete4error"/>");
+				}
 			}
-		}
-	})
+		})
+	});
 }
 
 var updateReno = updateRememo = null;

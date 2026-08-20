@@ -146,3 +146,31 @@
             <!-- /.navbar-static-side -->
         </nav>
 
+        <div class="modal fade" id="commonConfirmModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">확인</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p id="commonConfirmMessage"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                        <button type="button" class="btn btn-primary" id="commonConfirmOkBtn">확인</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+        function fn_confirm(msg, onConfirm){
+        	$("#commonConfirmMessage").text(msg);
+        	$("#commonConfirmOkBtn").off("click").on("click", function(){
+        		$("#commonConfirmModal").modal("hide");
+        		onConfirm();
+        	});
+        	$("#commonConfirmModal").modal("show");
+        }
+        </script>
+

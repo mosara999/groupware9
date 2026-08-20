@@ -60,17 +60,17 @@ window.onload = function() {
 function fn_formSubmit(){
 	if ( ! chkInputValue("#sstitle", "일정명")) return false;
 	if ( ! chkInputValue("#sscontents", "내용")) return false;
-	
-	if (!confirm("저장 하시겠습니까?")) return;
-	
-	$("#form1").submit();
-} 
+
+	fn_confirm("저장 하시겠습니까?", function(){
+		$("#form1").submit();
+	});
+}
 
 function fn_delete(){
-	if (!confirm("삭제 하시겠습니까?")) return;
-	
-	$("#form1").attr("action", "schDelete");
-	$("#form1").submit();
+	fn_confirm("삭제 하시겠습니까?", function(){
+		$("#form1").attr("action", "schDelete");
+		$("#form1").submit();
+	});
 }
 
 function ssrepeattypeChange(){

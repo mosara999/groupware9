@@ -78,12 +78,13 @@ function fn_groupDelete(value){
     	return;
     }
     
-    if(!confirm("<s:message code="ask.Delete"/>")) return;
-    $.ajax({
-    	url: "adDepartmentDelete",
-    	cache: false,
-    	data: { deptno : selectedNode.data.key }    	
-    }).done(receiveData4Delete);
+    fn_confirm("<s:message code="ask.Delete"/>", function(){
+    	$.ajax({
+    		url: "adDepartmentDelete",
+    		cache: false,
+    		data: { deptno : selectedNode.data.key }
+    	}).done(receiveData4Delete);
+    });
 }
 
 function receiveData4Delete(data){
@@ -99,14 +100,14 @@ function fn_groupSave(){
 	var pid=null;
     if (selectedNode!=null) pid=selectedNode.data.key;
 
-    if (!confirm("<s:message code="ask.Save"/>")) return;
-
-    $.ajax({
-    	url: "adDepartmentSave",
-    	cache: false,
-    	type: "POST",
-    	data: { deptno:$("#deptno").val(), deptnm:$("#deptnm").val(), parentno: pid}    	
-    }).done(receiveData4Save);
+    fn_confirm("<s:message code="ask.Save"/>", function(){
+    	$.ajax({
+    		url: "adDepartmentSave",
+    		cache: false,
+    		type: "POST",
+    		data: { deptno:$("#deptno").val(), deptnm:$("#deptnm").val(), parentno: pid}
+    	}).done(receiveData4Save);
+    });
 }
 
 function receiveData4Save(data){

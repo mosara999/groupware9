@@ -85,12 +85,13 @@ function fn_groupDelete(value){
     	return;
     }
     
-    if(!confirm("<s:message code="ask.Delete"/>")) return;
-    $.ajax({
-    	url: "adBoardGroupDelete",
-    	cache: false,
-    	data: { bgno : selectedNode.data.key }    	
-    }).done(receiveData4Delete);
+    fn_confirm("<s:message code="ask.Delete"/>", function(){
+    	$.ajax({
+    		url: "adBoardGroupDelete",
+    		cache: false,
+    		data: { bgno : selectedNode.data.key }
+    	}).done(receiveData4Delete);
+    });
 }
 
 function receiveData4Delete(data){
@@ -108,18 +109,18 @@ function fn_groupSave(){
 	var pid=null;
     if (selectedNode!=null) pid=selectedNode.data.key;
 
-    if (!confirm("<s:message code="ask.Save"/>")) return;
-
-    $.ajax({
-    	url: "adBoardGroupSave",
-    	cache: false,
-    	type: "POST",
-    	data: { bgno:$("#bgno").val(), bgname:$("#bgname").val(), bgparent: pid,
-    			bgused : $("input:radio[name=bgused]:checked").val(), 
-    			bgreadonly : $("input:radio[name=bgreadonly]:checked").val(), 
-    			bgreply : $("input:radio[name=bgreply]:checked").val(),
-    			bgnotice : $("input:radio[name=bgnotice]:checked").val()}    	
-    }).done(receiveData4Save);
+    fn_confirm("<s:message code="ask.Save"/>", function(){
+    	$.ajax({
+    		url: "adBoardGroupSave",
+    		cache: false,
+    		type: "POST",
+    		data: { bgno:$("#bgno").val(), bgname:$("#bgname").val(), bgparent: pid,
+    				bgused : $("input:radio[name=bgused]:checked").val(),
+    				bgreadonly : $("input:radio[name=bgreadonly]:checked").val(),
+    				bgreply : $("input:radio[name=bgreply]:checked").val(),
+    				bgnotice : $("input:radio[name=bgnotice]:checked").val()}
+    	}).done(receiveData4Save);
+    });
 }
 
 function receiveData4Save(data){

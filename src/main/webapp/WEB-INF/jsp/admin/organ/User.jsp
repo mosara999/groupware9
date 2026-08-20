@@ -186,17 +186,17 @@ function fn_UserRead(userno){
 }
 
 function fn_UserDelete(userno){
-    if(!confirm("<s:message code="ask.Delete"/>")) return;
-
-	$.ajax({
-		url: "adUserDelete", 
-		type:"post", 
-		data : {userno:userno, deptno:selectedNode.data.key},
-		success: function(result){
-			$("#userlist").html(result);
-			alert("<s:message code="msg.boardDelete"/>");
-		}
-	})		
+    fn_confirm("<s:message code="ask.Delete"/>", function(){
+		$.ajax({
+			url: "adUserDelete",
+			type:"post",
+			data : {userno:userno, deptno:selectedNode.data.key},
+			success: function(result){
+				$("#userlist").html(result);
+				alert("<s:message code="msg.boardDelete"/>");
+			}
+		})
+	});
 }
 
 </script>    

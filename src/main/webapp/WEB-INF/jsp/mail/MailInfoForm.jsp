@@ -33,21 +33,23 @@
 <script>
 
 function fn_formSubmit(){
-	if (!confirm("저장 하시겠습니까?")) return;
-	if ( ! chkInputValue("#emiimap", "IMAP 서버주소")) return false;
-	if ( ! chkInputValue("#emiimapport", "IMAP 서버 포트")) return false;
-	if ( ! chkInputValue("#emismtp", "SMTP 서버주소")) return false;
-	if ( ! chkInputValue("#emismtpport", "SMTP 서버 포트")) return false;
-	if ( ! chkInputValue("#emiuser", "계정 정보")) return false;
-	if ( ! chkInputValue("#emipw", "비밀번호")) return false;
-	
-	$("#form1").submit();
-} 
+	fn_confirm("저장 하시겠습니까?", function(){
+		if ( ! chkInputValue("#emiimap", "IMAP 서버주소")) return false;
+		if ( ! chkInputValue("#emiimapport", "IMAP 서버 포트")) return false;
+		if ( ! chkInputValue("#emismtp", "SMTP 서버주소")) return false;
+		if ( ! chkInputValue("#emismtpport", "SMTP 서버 포트")) return false;
+		if ( ! chkInputValue("#emiuser", "계정 정보")) return false;
+		if ( ! chkInputValue("#emipw", "비밀번호")) return false;
+
+		$("#form1").submit();
+	});
+}
 
 function fn_delete(){
-	if (!confirm("삭제 하시겠습니까?")) return;
-	$("#form1").attr("action", "mailInfoDelete");
-	$("#form1").submit();
+	fn_confirm("삭제 하시겠습니까?", function(){
+		$("#form1").attr("action", "mailInfoDelete");
+		$("#form1").submit();
+	});
 }
 </script> 
     

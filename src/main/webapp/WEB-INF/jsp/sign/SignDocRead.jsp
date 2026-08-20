@@ -38,9 +38,9 @@ function fn_sign(){
 }
 
 function fn_signSave(){
-	if (confirm("결재 하시겠습니까?")) {
+	fn_confirm("결재 하시겠습니까?", function(){
 		$("#dialogForm").submit();
-	}	
+	});
 }
 </script>    
 </head>
