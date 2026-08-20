@@ -1,0 +1,66 @@
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'eclipse-wtp'
+
+group = 'com.gu'
+version = '1.0'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+compileJava.options.encoding = 'UTF-8'
+
+repositories {
+    mavenCentral()
+}
+
+eclipse {
+    wtp {
+        component {
+            contextPath = 'groupware9'
+        }
+    }
+}
+
+dependencies {
+    providedCompile 'javax:javaee-web-api:7.0'
+
+    // Spring 4
+    implementation 'org.springframework:spring-core:4.1.2.RELEASE'
+    implementation 'org.springframework:spring-web:4.1.2.RELEASE'
+    implementation 'org.springframework:spring-webmvc:4.1.2.RELEASE'
+    implementation 'org.springframework:spring-tx:4.1.2.RELEASE'
+    implementation 'org.springframework:spring-orm:4.1.2.RELEASE'
+
+    implementation 'cglib:cglib:2.2'
+    implementation 'javax.servlet:jstl:1.2'
+
+    // log
+    implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4:1.16'
+    implementation 'org.slf4j:slf4j-api:1.7.18'
+    implementation 'ch.qos.logback:logback-core:1.1.2'
+    implementation 'ch.qos.logback:logback-classic:1.1.2'
+
+    // db
+    implementation 'mysql:mysql-connector-java:5.1.6'
+    implementation 'org.mybatis:mybatis:3.2.2'
+    implementation 'org.mybatis:mybatis-spring:1.1.0'
+    implementation 'commons-dbcp:commons-dbcp:1.2.2'
+
+    // file upload
+    implementation 'commons-io:commons-io:2.0.1'
+    implementation 'commons-fileupload:commons-fileupload:1.2.2'
+
+    // json request
+    implementation 'org.codehaus.jackson:jackson-mapper-asl:1.9.11'
+
+    // excel
+    implementation 'net.sf.jxls:jxls-core:1.0.6'
+    implementation 'org.jxls:jxls:2.3.0'
+    implementation 'org.jxls:jxls-poi:1.0.9'
+    implementation 'org.jxls:jxls-jexcel:1.0.6'
+    implementation 'org.apache.poi:poi:3.14'
+    implementation 'org.apache.poi:poi-ooxml:3.14'
+
+    implementation 'com.sun.mail:javax.mail:1.5.5'
+}

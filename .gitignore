@@ -1,2 +1,8 @@
 # env files (can opt-in for committing if needed)
 .env*
+
+# Gradle
+.gradle/
+build/
+bin/
+!**/src/**/bin/
