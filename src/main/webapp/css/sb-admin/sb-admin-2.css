@@ -514,14 +514,15 @@ _div {border:1px solid #cccccc}
 .calendarRow {
 	border-spacing: 1px;
 	display: table;
-	width: 100%;	
-}	
+	table-layout: fixed;
+	width: 100%;
+}
 .calendarColumnBox {
 	display: table-cell;
-    width: 13%;
+    width: 14.2857%;
     max-width: 0;
     padding: 1px;
-	min-height: 150px; 
+	min-height: 150px;
 	height: 150px;
 	margin: 1px;
 	border: 1px solid gray;
@@ -530,7 +531,7 @@ _div {border:1px solid #cccccc}
 
 .calendarColumnHead{
 	display: table-cell;
-    width: 13%;
+    width: 14.2857%;
     padding: 1px;
 	margin: 1px;
 	border: 1px solid gray;
