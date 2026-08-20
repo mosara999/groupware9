@@ -22,6 +22,11 @@ dependencies {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
     }
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    // JSP -> Thymeleaf migration (coexists with the JSP InternalResourceViewResolver via
+    // spring.thymeleaf.view-names in application.yml). springsecurity5 extra isn't used yet but
+    // will auto-inject CSRF hidden fields into th:action forms once CSRF protection is turned on.
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
     // Embedded Tomcat + Jasper (JSP compiler): providedCompile (not providedRuntime) because the
     // whole codebase compiles directly against javax.servlet.* — needed at compile time too, not
     // just runtime. Excluded from WEB-INF/lib when deployed to an external container that

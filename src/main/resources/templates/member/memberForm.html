@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{common/layout :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title th:text="#{common.pageTitle}">Groupware</title>
+</head>
+
+<body>
+<section>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header"><i class="fa fa-user fa-fw"></i> <span th:text="#{memu.profile}"></span></h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+
+            <!-- /.row -->
+            <div class="row">
+            	<div class="col-lg-7">
+					<form id="form1" name="form1" role="form" action="userSave" method="post" enctype="multipart/form-data"  >
+                   		<div class="row form-group">
+                           <div class="col-lg-1"></div>
+                           <label class="col-lg-2" th:text="#{common.id}"></label>
+                           <div class="col-lg-5">
+                           		<input type="text" class="form-control" id="userid" name="userid"
+                           			maxlength="20" readonly="readonly" th:value="${userInfo.userid}">
+                           </div>
+                       	</div>
+                   		<div class="row form-group">
+                           <div class="col-lg-1"></div>
+                           <label class="col-lg-2" th:text="#{common.name}"></label>
+                           <div class="col-lg-8">
+                           	<input type="text" class="form-control" id="usernm" name="usernm" maxlength="20" th:value="${userInfo.usernm}">
+                           </div>
+                       	</div>
+                   		<div class="row form-group">
+                           <div class="col-lg-1"></div>
+                           <div class="col-lg-2"><label th:text="#{common.photo}"></label></div>
+                           <div class="col-sm-3">
+                           	<img id="previewImg" style="width:100%; height: 120px; max-width: 100px;" th:src="@{fileDownload(downname=${userInfo.photo})}">
+                           </div>
+                           <div class="col-lg-5">
+							<input type="file" name="photofile" id="photofile" accept='image/*'/>
+                           </div>
+                       	</div>
+					</form>
+				</div>
+
+            </div>
+            <input type="hidden" id="saveResult" th:value="${save}" />
+            <button type="button" class="btn btn-primary" onclick="fn_formSubmit()" th:text="#{common.btnSave}"></button>
+            <button type="button" class="btn btn-primary" onclick="fn_changePW()" th:text="#{common.changePassword}"></button>
+            <button type="button" class="btn btn-default" onclick="fn_moveToURL('mailInfoList')">메일 정보 등록</button>
+            <!-- /.row -->
+
+    <div id="myModal" style="display: none;" class="modal fade bs-example-modal-sm" role="dialog" tabindex="-1" aria-labelledby="mySmallModalLabel">
+    	<div class="modal-dialog modal-sm" role="document">
+    		<div class="modal-content">
+    			<div class="modal-header">
+    				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    					<span aria-hidden="true">&times;</span>
+    				</button>
+    				<h4 class="modal-title" id="mySmallModalLabel" th:text="#{common.changePassword}"></h4>
+    			</div>
+    			<div class="modal-body">
+                   	<div class="row form-group">
+                    	<div class="col-lg-4"><label th:text="#{common.curPassword}"></label></div>
+                        <div class="col-sm-8">
+                        	<input type="password" class="form-control" id="curpw" name="curpw" maxlength="20">
+                        </div>
+                    </div>
+                   	<div class="row form-group">
+                    	<div class="col-lg-4"><label th:text="#{common.password}"></label></div>
+                        <div class="col-sm-8">
+                        	<input type="password" class="form-control" id="userpw" name="userpw" maxlength="20">
+                        </div>
+                    </div>
+                   	<div class="row form-group">
+                    	<div class="col-lg-4"><label th:text="#{common.passwordRe}"></label></div>
+                        <div class="col-sm-8">
+                        	<input type="password" class="form-control" id="userpw2" name="userpw2" maxlength="20">
+                        </div>
+                    </div>
+    			</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="close" th:text="#{common.btnClose}"></button>
+                    <button type="button" class="btn btn-primary" onclick="fn_changePWSave()" th:text="#{common.btnSave}"></button>
+                </div>
+    		</div>
+    	</div>
+    </div>
+
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+    $(function(){
+    	if ($("#saveResult").val() === "OK") {
+    		alert("저장되었습니다.");
+    	}
+
+        $("#photofile").change(function(){
+        	readImage(this);
+        });
+    });
+
+    function readImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#previewImg').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    function fn_formSubmit(){
+    	if ( ! chkInputValue("#usernm", /*[[#{common.name}]]*/ "이름")) return false;
+
+    	$("#form1").submit();
+    }
+
+    function fn_changePW() {
+    	$("#curpw").val("");
+    	$("#userpw").val("");
+    	$("#userpw2").val("");
+    	$('#myModal').modal("show");
+    }
+    function fn_changePWSave() {
+    	if ( ! chkInputValue("#curpw", /*[[#{common.curPassword}]]*/ "현재 비밀번호")) return false;
+    	if ( ! chkInputValue("#userpw", /*[[#{common.password}]]*/ "비밀번호")) return false;
+    	if ( ! chkInputValue("#userpw2", /*[[#{common.passwordRe}]]*/ "비밀번호[확인]")) return false;
+    	if ( $("#userpw").val() !== $("#userpw2").val()){
+    		alert(/*[[#{msg.err.noMatchPW}]]*/ "입력한 비밀번호가 정확하지 않습니다.");
+    		return false;
+    	}
+
+    	$.ajax({
+    		url: "changePWSave",
+    		type:"post",
+    		data : {curpw:$("#curpw").val(), userpw:$("#userpw").val()},
+    		success: function(result){
+    			if (result==="OK") {
+    				alert(/*[[#{msg.changeComplete}]]*/ "변경되었습니다.");
+    				$("#myModal").modal("hide");
+    			} else {
+    				alert(/*[[#{msg.err.noMatchPW}]]*/ "입력한 비밀번호가 정확하지 않습니다.");
+    			}
+    		}
+    	})
+    }
+    /*]]>*/
+    </script>
+</section>
+</body>
+
+</html>

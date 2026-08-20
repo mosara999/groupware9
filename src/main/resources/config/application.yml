@@ -12,3 +12,10 @@ server:
       force: true
     session:
       timeout: 30m
+
+spring:
+  thymeleaf:
+    # Only these view names are served by Thymeleaf; every other view name falls through to the
+    # JSP InternalResourceViewResolver (applicationContext.xml) while the JSP->Thymeleaf migration
+    # is in progress. Add a view name here as each screen gets converted.
+    view-names: member/memberForm
