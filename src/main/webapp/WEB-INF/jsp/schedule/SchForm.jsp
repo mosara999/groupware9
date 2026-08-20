@@ -119,7 +119,7 @@ function ssrepeattypeChange(){
             <div class="row">
             	<form id="form1" name="form1" role="form" action="schSave" method="post" >
             		<input type="hidden" name="ssno" value="<c:out value="${schInfo.ssno}"/>">
-					<div class="panel panel-default">
+					<div class="panel panel-default schForm">
 	                    <div class="panel-body">
 	                    	<div class="row form-group">
 	                            <label class="col-lg-1">일정명</label>

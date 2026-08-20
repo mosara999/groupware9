@@ -606,3 +606,30 @@ _div {border:1px solid #cccccc}
 	width: 400px;
 	font-size: 11px;
 }
+
+/* 일정 등록/수정 폼 (schedule/SchForm.jsp) - .schForm 안에서만 적용, 다른 화면의 공용 패널/폼 스타일에는 영향 없음 */
+.schForm.panel {
+	border: 1px solid #E3E3E0;
+	border-radius: 8px;
+	box-shadow: none;
+}
+.schForm .panel-body {
+	padding: 24px;
+}
+.schForm label {
+	color: #37352F;
+	font-weight: 600;
+}
+.schForm .form-control {
+	border: 1px solid #E3E3E0;
+	border-radius: 6px;
+	box-shadow: none;
+	transition: border-color 0.15s ease;
+}
+.schForm .form-control:focus {
+	border-color: #2EAADC;
+	box-shadow: none;
+}
+.schForm .form-group {
+	margin-bottom: 16px;
+}
