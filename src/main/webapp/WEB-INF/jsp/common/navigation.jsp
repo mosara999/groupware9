@@ -140,6 +140,9 @@
                              </li>
 	                	</c:if>	        
                     </ul>
+                    <div style="padding: 12px 16px;">
+                        <a href="privacyPolicy" style="color:#9B9A97; font-size:12px; text-decoration:none;">개인정보 처리방침</a>
+                    </div>
                 </div>
                 <!-- /.sidebar-collapse -->
             </div>
