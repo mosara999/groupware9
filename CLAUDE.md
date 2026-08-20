@@ -4,51 +4,58 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-A Korean-language web-based groupware system (그룹웨어) built on Spring 4 + MyBatis 3 + MariaDB/MySQL, packaged as a
-`war` with Gradle. It's a sample/practice project built on top of the [Project9](https://github.com/gujc71/project9/)
-web template. Implemented features: monthly calendar/schedule, e-approval (기안/결재 documents), internal mail
-(compose/inbox/sent, IMAP import), and a bulletin board system with configurable board groups.
+A Korean-language web-based groupware system (그룹웨어) built on Spring Boot 2.7 (Spring Framework 5.3) + MyBatis 3 +
+MariaDB, packaged as a `war` with Gradle. It's a sample/practice project built on top of the
+[Project9](https://github.com/gujc71/project9/) web template. Implemented features: monthly calendar/schedule,
+e-approval (기안/결재 documents), internal mail (compose/inbox/sent, IMAP import), and a bulletin board system with
+configurable board groups.
 
-- Java 1.8 source/target compatibility (`build.gradle`). (Originally Maven declared source/target 1.7 while Eclipse
-  actually compiled at 1.8; the project was migrated to Gradle and standardized on 1.8, which also matches the JDK
-  17 toolchain used to run the Gradle build itself.)
+- Java 1.8 source/target compatibility (`build.gradle`), running on a JDK 17 toolchain.
 - No automated test suite exists (`src/test` is not present); verification is manual, through the running app.
 - No linter/formatter is configured (the project no longer builds via Eclipse; there is no Eclipse project/
   Checkstyle metadata checked in).
-- Dependencies (`build.gradle`) are modernized to their latest release within the Spring 4.x/`javax.*` generation —
-  this is step 1 of a staged Spring 4 → 6 migration; the `javax` → `jakarta` namespace switch and the Spring 5/6
-  jump itself haven't happened yet. `org.apache.poi:poi`/`poi-ooxml` are the one exception, intentionally left at
-  3.14: `gu.common.MakeExcel` drives Excel export through `net.sf.jxls:jxls-core:1.0.6`, an unmaintained (2011-era)
-  library that calls POI 3.x internals directly, so bumping POI without first replacing jxls risks breaking Excel
-  export in a way that can't be verified without a running Tomcat + browser to actually download a file.
+- **Migration history / current stage**: this was originally a plain Spring 4 + `web.xml` app. It went through a
+  staged migration: (1) modernize dependencies within the Spring 4.x/`javax.*` generation, (2) **convert to Spring
+  Boot 2.7** (current stage — still `javax.*`, since Boot 2.x is the last major line built on Spring Framework 5.x
+  rather than 6). A later stage could still jump to Spring Boot 3 / Spring 6, which is when the `javax` → `jakarta`
+  namespace switch would actually happen (Spring's own MVC classes only support `jakarta.servlet` from Spring 6
+  onward, so that switch cannot happen independently of a Spring 6 upgrade). `org.apache.poi:poi`/`poi-ooxml` are
+  intentionally still pinned at 3.14: `gu.common.MakeExcel` drives Excel export through
+  `net.sf.jxls:jxls-core:1.0.6`, an unmaintained (2011-era) library that calls POI 3.x internals directly, so
+  bumping POI without first replacing jxls risks breaking Excel export (not yet re-verified after the Boot move —
+  see Known gaps below).
 
 ## Build and run
 
-Plain Gradle project (Gradle Wrapper checked in) — no IDE project files are checked in, so any editor/IDE can be
-pointed at it, but building/running goes through Gradle rather than an IDE-managed server.
+Spring Boot Gradle project (Gradle Wrapper checked in) — no IDE project files are checked in, so any editor/IDE can
+be pointed at it, but building/running goes through Gradle rather than an IDE-managed server. `gu.GroupwareApplication`
+is the entry point (`@SpringBootApplication` + `SpringBootServletInitializer`); it replaces the old `web.xml` and
+`@ImportResource`s the legacy Spring bean XML unchanged (see Architecture below).
 
 ```
-./gradlew compileJava   # compile (gradlew.bat on Windows cmd/PowerShell outside Git Bash)
-./gradlew war            # build the WAR at build/libs/project9-1.0.war (src/test is absent, so no tests run)
+./gradlew bootRun        # run with embedded Tomcat at http://localhost:8080/groupware9/ (gradlew.bat on Windows)
+./gradlew bootWar         # build the executable WAR at build/libs/project9-1.0.war
+./gradlew war             # build a plain (non-executable) WAR at build/libs/project9-1.0-plain.war, for deploying
+                           # to an external servlet container instead
 ```
 
-To actually run the app: deploy the built WAR to a Tomcat instance — e.g. copy `build/libs/project9-1.0.war` into
-Tomcat's `webapps/` as `groupware9.war` (Tomcat derives the context path from the deployed file/folder name) — then
-browse to `http://localhost:8080/groupware9/`. Default seeded logins: `admin/admin`, `user1/user1`, `user2/user2`,
-etc.
+`bootWar`'s output is runnable both ways: `java -jar build/libs/project9-1.0.war` starts it standalone (embedded
+Tomcat), and the same file can also be dropped into an external Tomcat's `webapps/`. Default seeded logins:
+`admin/admin`, `user1/user1`, `user2/user2`, etc. `server.servlet.context-path` is pinned to `/groupware9` in
+`application.yml` so the URL matches regardless of how it's run.
 
 ### Database setup
 
 MariaDB database named `groupware9` is required (JDBC driver is `org.mariadb.jdbc` — MariaDB Connector/J — not the
 MySQL driver, even though the codebase/docs still say "MariaDB/MySQL" since the schema is wire-compatible with
 either). Connection settings (driver class, URL, username, password) live in
-`src/main/resources/config/application.yml`, not in the XML — `applicationContext.xml`'s `dataSource` bean reads
-them via `${db.*}` placeholders resolved by a `YamlPropertiesFactoryBean` + `context:property-placeholder` (needs
-`org.yaml:snakeyaml` on the classpath, already in `build.gradle`). Defaults are `root`/`gujc1004` against
+`src/main/resources/config/application.yml` under a custom `db.*` key (not Boot's own `spring.datasource.*`) —
+`src/main/resources/spring/applicationContext.xml`'s `dataSource` bean reads them via `${db.*}` placeholders
+resolved by a `YamlPropertiesFactoryBean` + `context:property-placeholder`, predating the Boot migration and left
+as-is deliberately (Boot's own `DataSourceAutoConfiguration` never activates because no `spring.datasource.*` keys
+are set, so there's no conflict with this manual wiring). Defaults are `root`/`gujc1004` against
 `jdbc:log4jdbc:mariadb://localhost/groupware9` (wrapped by `log4jdbc` for SQL logging; the real driver behind it is
-`net.sf.log4jdbc.sql.jdbcapi.DriverSpy`, set via `db.driverClassName`). Classic Spring XML bean wiring itself (this
-file, `dispatcher-servlet.xml`, `web.xml`) has no YAML equivalent in vanilla Spring — only the externalized values
-are YAML.
+`net.sf.log4jdbc.sql.jdbcapi.DriverSpy`, set via `db.driverClassName`).
 
 **Docker (recommended):** `docker compose up -d` starts a MariaDB container (`docker-compose.yml`) already matching
 those credentials on `localhost:3306`, and auto-loads `tables.sql`/`tableData.sql` on first start via
@@ -63,7 +70,8 @@ case-insensitive Windows/MySQL, but Linux MariaDB defaults to case-sensitive tab
 **Manual (non-Docker) setup:**
 1. Create the `groupware9` database.
 2. Run `tables.sql` then `tableData.sql` at the repo root to create schema and seed data.
-3. Adjust `applicationContext.xml`'s `dataSource` bean if your local credentials differ from `root`/`gujc1004`.
+3. Adjust `src/main/resources/config/application.yml`'s `db.*` values if your local credentials differ from
+   `root`/`gujc1004`.
 
 `groupware9.erm` / `project9.erd` are ERD design files (openable in ERD tooling) documenting the schema design.
 
@@ -85,8 +93,10 @@ Every feature module follows the same 3(+1)-file pattern inside a `gu.<module>` 
 - `*Svc.java` — `@Service`, injects `SqlSessionTemplate sqlSession` (MyBatis) directly — there is no separate DAO/
   Repository layer. Multi-statement writes wrap manual transactions using an injected
   `DataSourceTransactionManager` (`DefaultTransactionDefinition` + explicit `commit`/`rollback` in a try/catch),
-  rather than `@Transactional`, even though `applicationContext.xml` also wires up `tx:advice`/annotation-driven
-  transactions.
+  rather than `@Transactional` (nothing in the codebase uses `@Transactional`; if it ever does, Spring Boot's own
+  `TransactionAutoConfiguration` picks up the `txManager` bean automatically — the old XML `tx:advice`/
+  `tx:annotation-driven` declarations were removed during the Boot migration because they registered
+  infrastructure beans under names Boot's auto-configuration also uses, which fails startup).
 - `*VO.java` — plain data-holder classes bound from request params (Spring auto-binds request parameters to VO
   fields) and used as MyBatis parameter/result types.
 - `src/main/resources/sql/<module>.xml` — MyBatis mapper XML with SQL for that module. **Mapper `<select>/<insert>/
@@ -102,12 +112,26 @@ attributes.
 
 ### Request flow / security
 
-- `dispatcher-servlet.xml` component-scans the whole `gu` package, maps views through
-  `InternalResourceViewResolver` (`/WEB-INF/jsp/<view>.jsp`), and registers two interceptors:
+- No `web.xml` — `gu.GroupwareApplication` (`@SpringBootApplication`) is the entry point, and
+  `@ImportResource({"classpath:spring/applicationContext.xml", "classpath:spring/dispatcher-servlet.xml"})` loads
+  the legacy bean XML (now under `src/main/resources/spring/`, moved off the servlet-relative `WEB-INF/` path so
+  it's a normal classpath resource) essentially unchanged: `dataSource`/MyBatis/`messageSource`/
+  `InternalResourceViewResolver`/`CommonsMultipartResolver` beans are still XML. Boot uses a single unified
+  `ApplicationContext` (no separate root + DispatcherServlet child context), so both files load into the same
+  context.
+- Interceptors and static resource mappings moved out of `dispatcher-servlet.xml` into `gu.config.WebMvcConfig`
+  (a `WebMvcConfigurer` `@Bean`) — the `<mvc:*>` XML namespace elements (`annotation-driven`, `interceptors`,
+  `resources`) all register shared MVC infrastructure beans under names Spring Boot's `WebMvcAutoConfiguration`
+  independently defines too (e.g. `mvcUrlPathHelper`), which fails startup with a bean-definition-override error —
+  Java config avoids that collision. `WebMvcConfig` registers the same two interceptors as before:
   - `gu.common.LoginInterceptor` on `/**` (excluding `/memberLogin`, `/memberLoginChk`, `/js/**`, `/css/**`,
     `/images/**`) — redirects to `memberLogin` if `session.getAttribute("userno")` is absent.
   - `gu.common.AdminInterceptor` on `/ad*` — additionally requires `session.getAttribute("userrole")` to equal
     `"A"`, else redirects to `noAuthMessage`.
+- Error pages (404/500/generic `Exception` → JSPs under `WEB-INF/jsp/common/`), UTF-8 request/response encoding,
+  and session timeout — previously `web.xml` `<error-page>`/filter/`<session-config>` entries — are now an
+  `ErrorPageRegistrar` `@Bean` in `GroupwareApplication` plus `server.servlet.encoding.*`/
+  `server.servlet.session.timeout` in `application.yml`.
 - There is no Spring Security; auth state is plain `HttpSession` attributes (`userno`, `userid`, `userrole`,
   `usernm`) set at login. Per-record write/delete authorization (e.g. board edit/delete) is checked ad hoc in the
   service layer via `select*AuthChk` mapper queries returning null on failure — controllers then return the

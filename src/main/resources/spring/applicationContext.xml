@@ -11,7 +11,12 @@
 
     <context:annotation-config/>
 
-    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <!-- tx:annotation-driven removed: it registers a shared "internalTransactionAdvisor" bean
+         under the same name Spring Boot's TransactionAutoConfiguration uses (which activates
+         automatically once a PlatformTransactionManager bean like txManager below exists),
+         causing a bean-definition-override startup failure. Nothing in this codebase uses
+         @Transactional anyway (writes use manual transactions, see CLAUDE.md), so Boot's
+         auto-configured equivalent is a strict improvement, not a functional change. -->
 
     <!-- DB connection settings live in classpath:config/application.yml, not here. -->
     <bean id="yamlProperties" class="org.springframework.beans.factory.config.YamlPropertiesFactoryBean">

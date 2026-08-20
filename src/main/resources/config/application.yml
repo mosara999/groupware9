@@ -3,3 +3,12 @@ db:
   url: "jdbc:log4jdbc:mariadb://localhost/groupware9?useUnicode=true&characterEncoding=UTF-8"
   username: root
   password: gujc1004
+
+server:
+  servlet:
+    context-path: /groupware9
+    encoding:
+      charset: UTF-8
+      force: true
+    session:
+      timeout: 30m
