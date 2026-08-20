@@ -25,21 +25,19 @@
 
     <context:property-placeholder properties-ref="yamlProperties"/>
 
-    <!-- commons-dbcp2 renamed several BasicDataSource properties from the old commons-dbcp 1.x
-         names: maxActive -> maxTotal, maxWait -> maxWaitMillis, removeAbandoned split into
-         removeAbandonedOnBorrow/removeAbandonedOnMaintenance. -->
-    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close"
-		  p:driverClassName="${db.driverClassName}" p:url="${db.url}"
+    <!-- HikariCP. MariaDB Connector/J is JDBC4-compliant, so the pool validates borrowed
+         connections via Connection.isValid() automatically — no connectionTestQuery needed.
+         Unlike DBCP2's removeAbandonedTimeout (which force-reclaimed a stuck connection),
+         leakDetectionThreshold only logs a warning when a connection is held past the
+         threshold; it does not reclaim it. -->
+    <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close"
+		  p:driverClassName="${db.driverClassName}" p:jdbcUrl="${db.url}"
           p:username="${db.username}" p:password="${db.password}"
-          p:initialSize="2"
-          p:maxTotal="30"
-          p:maxIdle="10"
-          p:minIdle="3"
-          p:maxWaitMillis="30000"
-          p:removeAbandonedOnBorrow="true"
-          p:removeAbandonedOnMaintenance="true"
-          p:removeAbandonedTimeout="30"
-          p:validationQuery="SELECT 1" />
+          p:poolName="groupware9-hikari"
+          p:maximumPoolSize="30"
+          p:minimumIdle="3"
+          p:connectionTimeout="30000"
+          p:leakDetectionThreshold="30000" />
 
 	<!-- SqlSession setup for MyBatis Database Layer -->
 	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionFactoryBean">

@@ -46,8 +46,8 @@ dependencies {
     implementation 'org.mariadb.jdbc:mariadb-java-client:3.5.10'
     implementation 'org.mybatis:mybatis:3.5.19'
     implementation 'org.mybatis:mybatis-spring:2.1.2'
-    implementation 'org.apache.commons:commons-dbcp2:2.14.0'
-    implementation 'org.apache.commons:commons-pool2:2.13.1'
+    // db connection pool (version managed by Boot's BOM)
+    implementation 'com.zaxxer:HikariCP'
 
     // YAML config (backs YamlPropertiesFactoryBean in applicationContext.xml; version managed
     // by Boot's BOM)
