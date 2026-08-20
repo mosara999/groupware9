@@ -200,7 +200,7 @@ CREATE TABLE EML_MAILINFO
 	EMISMTP varchar(30) COMMENT 'SMTP 서버주소',
 	EMISMTPPORT varchar(5) COMMENT 'SMTP 서버포트',
 	EMIUSER varchar(50) COMMENT '계정',
-	EMIPW varchar(50) COMMENT '비밀번호',
+	EMIPW varchar(255) COMMENT '비밀번호(암호화 저장)',
 	USERNO int(10) NOT NULL COMMENT '사용자번호',
 	ENTRYDATE date COMMENT '등록일자',
 	DELETEFLAG char(1) COMMENT '삭제',

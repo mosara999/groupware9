@@ -18,6 +18,7 @@ import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import gu.common.CryptoUtil;
 import gu.common.FileVO;
 import gu.common.SearchVO;
 
@@ -129,7 +130,7 @@ public class MailSvc {
         	param.setEmfrom(fromVO.getEmiuser());
         	insertMailOne(param);
 
-    		SendMail sm = new SendMail(fromVO.getEmismtp(), fromVO.getEmismtpport(), fromVO.getEmiuser(), fromVO.getUsernm(), fromVO.getEmipw());
+    		SendMail sm = new SendMail(fromVO.getEmismtp(), fromVO.getEmismtpport(), fromVO.getEmiuser(), fromVO.getUsernm(), CryptoUtil.decrypt(fromVO.getEmipw()));
    			sm.send(true, to, cc, bcc, param.getEmsubject(), param.getEmcontents());//
         	
 	        txManager.commit(status);
@@ -211,6 +212,13 @@ public class MailSvc {
      */
     public MailInfoVO selectMailInfoOne(MailInfoVO param) {
         return sqlSession.selectOne("selectMailInfoOne", param);
+    }
+
+    /**
+     * 읽기(본인 소유인 경우에만 조회됨).
+     */
+    public MailInfoVO selectMailInfoOne4Me(MailInfoVO param) {
+        return sqlSession.selectOne("selectMailInfoOne4Me", param);
     }
 
     /**

@@ -39,7 +39,7 @@ function fn_formSubmit(){
 		if ( ! chkInputValue("#emismtp", "SMTP 서버주소")) return false;
 		if ( ! chkInputValue("#emismtpport", "SMTP 서버 포트")) return false;
 		if ( ! chkInputValue("#emiuser", "계정 정보")) return false;
-		if ( ! chkInputValue("#emipw", "비밀번호")) return false;
+		if ($("#emino").val()=="" && ! chkInputValue("#emipw", "비밀번호")) return false;
 
 		$("#form1").submit();
 	});
@@ -72,7 +72,7 @@ function fn_delete(){
             <!-- /.row -->
             <div class="row">
             	<form id="form1" name="form1" role="form" action="mailInfoSave" method="post" >
-            		<input type="hidden" name="emino" value="<c:out value="${mailInfoInfo.emino}"/>">
+            		<input type="hidden" id="emino" name="emino" value="<c:out value="${mailInfoInfo.emino}"/>">
 					<div class="panel panel-default">
 	                    <div class="panel-body">
 	                    	<div class="row form-group">
@@ -109,9 +109,10 @@ function fn_delete(){
 	                    	<div class="row form-group">
 	                            <label class="col-lg-2">비밀번호</label>
 	                            <div class="col-lg-4">
-	                            	<input type="password" class="form-control" id="emipw" name="emipw" maxlength="20" value="<c:out value="${mailInfoInfo.emipw}"/>">
+	                            	<input type="password" class="form-control" id="emipw" name="emipw" maxlength="20"
+	                            		<c:if test='${mailInfoInfo.emino!=null}'>placeholder="변경하지 않으려면 비워두세요"</c:if>>
 	                            </div>
-	                        </div> 
+	                        </div>
 	                    </div>
 	                </div>
 				</form>	

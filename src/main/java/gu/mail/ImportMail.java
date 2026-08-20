@@ -4,6 +4,7 @@ import java.util.*;
 
 import javax.servlet.http.HttpSession;
 
+import gu.common.CryptoUtil;
 import gu.common.Field3VO;
 import gu.common.LocaleMessage;
 import gu.mail.MailVO;
@@ -27,7 +28,7 @@ public class ImportMail  implements Runnable {
         		MailInfoVO mivo = (MailInfoVO) list.get(i);
             	String lastdate = mailSvc.selectLastMail(mivo.getEmino());
              	
-        	 	mail.connect(mivo.getEmiimap(), mivo.getEmiuser(), mivo.getEmipw());
+        	 	mail.connect(mivo.getEmiimap(), mivo.getEmiuser(), CryptoUtil.decrypt(mivo.getEmipw()));
         	 	Integer total = mail.patchMessage(lastdate);
         	 	
         	 	int cnt = 0;

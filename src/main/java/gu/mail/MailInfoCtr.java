@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import gu.common.CryptoUtil;
 import gu.common.SearchVO;
 import gu.etc.EtcSvc;
 
@@ -53,13 +54,18 @@ public class MailInfoCtr {
         
         etcSvc.setCommonAttribute(userno, modelMap);
     	
-        // 
+        //
         if (mailInfoInfo.getEmino() != null) {
-            mailInfoInfo = mailSvc.selectMailInfoOne(mailInfoInfo);
-        
-            modelMap.addAttribute("mailInfoInfo", mailInfoInfo);
+            mailInfoInfo.setUserno(userno);
+            mailInfoInfo = mailSvc.selectMailInfoOne4Me(mailInfoInfo);
+
+            if (mailInfoInfo != null) {
+                // 저장된 비밀번호(암호화 값)는 화면에 절대 내려보내지 않는다.
+                mailInfoInfo.setEmipw(null);
+                modelMap.addAttribute("mailInfoInfo", mailInfoInfo);
+            }
         }
-        
+
         return "mail/MailInfoForm";
     }
     
@@ -77,7 +83,18 @@ public class MailInfoCtr {
 
         String userno = request.getSession().getAttribute("userno").toString();
     	mailInfoInfo.setUserno(userno);
-    	
+
+        boolean isEdit = mailInfoInfo.getEmino() != null && !"".equals(mailInfoInfo.getEmino());
+        if (isEdit && (mailInfoInfo.getEmipw() == null || "".equals(mailInfoInfo.getEmipw()))) {
+            // 비밀번호를 비워둔 채 수정한 경우 기존 비밀번호를 그대로 유지한다.
+            MailInfoVO existing = mailSvc.selectMailInfoOne4Me(mailInfoInfo);
+            if (existing == null) {
+                modelMap.addAttribute("msg", "수정할 수 없습니다.");
+                return "common/message";
+            }
+            mailInfoInfo.setEmipw(CryptoUtil.decrypt(existing.getEmipw()));
+        }
+
         try {
         	Imap mail = new Imap();
     	 	mail.connect(mailInfoInfo.getEmiimap(), mailInfoInfo.getEmiuser(), mailInfoInfo.getEmipw());
@@ -86,7 +103,8 @@ public class MailInfoCtr {
             modelMap.addAttribute("msg", "서버에 접속할 수 없습니다.");
             return "common/message";
         }
-        
+
+        mailInfoInfo.setEmipw(CryptoUtil.encrypt(mailInfoInfo.getEmipw()));
         mailSvc.insertMailInfo(mailInfoInfo);
 
         Thread t = new Thread(new ImportMail(mailSvc, userno, session) );
@@ -100,9 +118,11 @@ public class MailInfoCtr {
      */
     @RequestMapping(value = "/mailInfoDelete")
     public String mailInfoDelete(HttpServletRequest request, MailInfoVO mailInfoVO) {
+        String userno = request.getSession().getAttribute("userno").toString();
+        mailInfoVO.setUserno(userno);
 
         mailSvc.deleteMailInfo(mailInfoVO);
-        
+
         return "redirect:/mailInfoList";
     }
    

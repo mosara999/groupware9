@@ -21,21 +21,29 @@
         UPDATE EML_MAILINFO
            SET EMIIMAP=#{emiimap}, EMIIMAPPORT=#{emiimapport}, EMISMTP=#{emismtp}, EMISMTPPORT=#{emismtpport}
              , EMIUSER=#{emiuser}, EMIPW=#{emipw}
-         WHERE EMINO=#{emino} 
-    </update> 
-        
+         WHERE EMINO=#{emino} AND USERNO=#{userno}
+    </update>
+
     <select id="selectMailInfoOne" resultType="gu.mail.MailInfoVO" parameterType="String">
         SELECT EMINO, EMIIMAP, EMIIMAPPORT, EMISMTP, EMISMTPPORT, EMIUSER, EMIPW, EMI.USERNO, USERNM
           FROM EML_MAILINFO EMI
          INNER JOIN COM_USER CU ON EMI.USERNO=CU.USERNO
          WHERE EMI.EMINO=#{emino}
-    </select>      
-    
+    </select>
+
+    <!-- selectMailInfoOne과 달리 본인 소유(emino, userno)인 경우에만 조회되도록 소유자 검증 포함 -->
+    <select id="selectMailInfoOne4Me" resultType="gu.mail.MailInfoVO" parameterType="gu.mail.MailInfoVO">
+        SELECT EMINO, EMIIMAP, EMIIMAPPORT, EMISMTP, EMISMTPPORT, EMIUSER, EMIPW, EMI.USERNO, USERNM
+          FROM EML_MAILINFO EMI
+         INNER JOIN COM_USER CU ON EMI.USERNO=CU.USERNO
+         WHERE EMI.EMINO=#{emino} AND EMI.USERNO=#{userno}
+    </select>
+
     <delete id="deleteMailInfo" parameterType="gu.mail.MailInfoVO">
         UPDATE EML_MAILINFO
            SET DELETEFLAG='Y'
-         WHERE EMINO=#{emino} 
-    </delete> 
+         WHERE EMINO=#{emino} AND USERNO=#{userno}
+    </delete>
   
 </mapper>
 
