@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{common/layout :: layout(title=~{::title}, content=~{::section}, extraHead=${null})}">
+
+<head>
+    <title th:text="#{common.pageTitle}">Groupware</title>
+</head>
+
+<body>
+<section>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">Error</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+
+            <!-- /.row -->
+            <div class="row" th:text="#{msg.err.board}">
+            </div>
+            <!-- /.row -->
+</section>
+</body>
+
+</html>
