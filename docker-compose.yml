@@ -1,0 +1,32 @@
+services:
+  mariadb:
+    image: mariadb:10.11
+    container_name: groupware9-mariadb
+    restart: unless-stopped
+    # lower-case-table-names=1 matches the case-insensitive table name behavior of the Windows/MySQL
+    # setup this schema was authored for (tables.sql uses UPPERCASE table names, tableData.sql uses
+    # lowercase) — Linux MariaDB defaults to case-sensitive table names, which would break the seed
+    # data inserts otherwise. Only takes effect on first data-directory initialization.
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci --lower-case-table-names=1
+    environment:
+      MARIADB_ROOT_PASSWORD: gujc1004
+      MARIADB_DATABASE: groupware9
+    ports:
+      - "3306:3306"
+    volumes:
+      - groupware9-mariadb-data:/var/lib/mysql
+      # Runs once, only when the data volume is first initialized.
+      # tables.sql/tableData.sql are mounted under sql/ (not directly in initdb.d) and applied by
+      # 01-init.sh via a plain `mysql` client, since docker-entrypoint-initdb.d's built-in *.sql
+      # handling uses --binary-mode, which breaks the DELIMITER-based routines in tables.sql.
+      - ./tables.sql:/docker-entrypoint-initdb.d/sql/tables.sql:ro
+      - ./tableData.sql:/docker-entrypoint-initdb.d/sql/tableData.sql:ro
+      - ./docker/mariadb-init/01-init.sh:/docker-entrypoint-initdb.d/01-init.sh:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  groupware9-mariadb-data:

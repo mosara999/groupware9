@@ -33,14 +33,27 @@ etc.
 
 ### Database setup
 
-MariaDB/MySQL database named `groupware9` is required:
+MariaDB/MySQL database named `groupware9` is required. `src/main/webapp/WEB-INF/applicationContext.xml` (the
+`dataSource` bean) has hardcoded local credentials — `root`/`gujc1004` against `jdbc:log4jdbc:mysql://localhost/
+groupware9` (wrapped by `log4jdbc` for SQL logging; swap the driver class between the plain MySQL driver and
+`net.sf.log4jdbc.sql.jdbcapi.DriverSpy` as needed, both forms are shown in the comment above the bean).
+
+**Docker (recommended):** `docker compose up -d` starts a MariaDB container (`docker-compose.yml`) already matching
+those credentials on `localhost:3306`, and auto-loads `tables.sql`/`tableData.sql` on first start via
+`docker/mariadb-init/01-init.sh` — nothing else to configure. That script bypasses docker-entrypoint-initdb.d's
+built-in `*.sql` handling (which runs `mysql --binary-mode` and breaks the `DELIMITER`-based routines in
+`tables.sql`) by invoking a plain `mysql` client instead. The container also sets `--lower-case-table-names=1`
+because `tables.sql` creates tables in UPPERCASE while `tableData.sql` seeds them by lowercase name — fine on
+case-insensitive Windows/MySQL, but Linux MariaDB defaults to case-sensitive table names. Re-running
+`docker compose up -d` reuses the existing data volume (`groupware_groupware9-mariadb-data`); `docker compose down
+-v` wipes it to reseed from scratch.
+
+**Manual (non-Docker) setup:**
 1. Create the `groupware9` database.
 2. Run `tables.sql` then `tableData.sql` at the repo root to create schema and seed data.
-3. Set real DB connection info in `src/main/webapp/WEB-INF/applicationContext.xml` (the `dataSource` bean) — the
-   checked-in file has hardcoded local credentials (`root`/a password) for the `groupware9` schema wrapped by
-   `log4jdbc` (`jdbc:log4jdbc:mysql://...`) for SQL logging. Swap the driver class between the plain MySQL driver and
-   `net.sf.log4jdbc.sql.jdbcapi.DriverSpy` as needed (both forms are shown in the comment above the bean).
-4. `groupware9.erm` / `project9.erd` are ERD design files (openable in ERD tooling) documenting the schema design.
+3. Adjust `applicationContext.xml`'s `dataSource` bean if your local credentials differ from `root`/`gujc1004`.
+
+`groupware9.erm` / `project9.erd` are ERD design files (openable in ERD tooling) documenting the schema design.
 
 ### Logging
 

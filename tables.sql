@@ -383,9 +383,9 @@ BEGIN
             END IF;
       ELSE SET ret_:= CONCAT(TIMESTAMPDIFF (YEAR, dt_, NOW()), '년전');
       END IF;
-      
+
 RETURN ret_;
-END;
+END $$
 
 DELIMITER $$
 CREATE PROCEDURE `makeCalendar`()
@@ -400,5 +400,7 @@ BEGIN
             
 		SET sdate = DATE_ADD(sdate, INTERVAL 1 DAY);
 	END WHILE;
-    
-END;
+
+END $$
+
+DELIMITER ;
