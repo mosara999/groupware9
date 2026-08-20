@@ -20,15 +20,19 @@
 
     <context:property-placeholder properties-ref="yamlProperties"/>
 
-    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"
+    <!-- commons-dbcp2 renamed several BasicDataSource properties from the old commons-dbcp 1.x
+         names: maxActive -> maxTotal, maxWait -> maxWaitMillis, removeAbandoned split into
+         removeAbandonedOnBorrow/removeAbandonedOnMaintenance. -->
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close"
 		  p:driverClassName="${db.driverClassName}" p:url="${db.url}"
           p:username="${db.username}" p:password="${db.password}"
           p:initialSize="2"
-          p:maxActive="30"
+          p:maxTotal="30"
           p:maxIdle="10"
-          p:minIdle="3" 
-          p:maxWait="30000"
-          p:removeAbandoned="true"
+          p:minIdle="3"
+          p:maxWaitMillis="30000"
+          p:removeAbandonedOnBorrow="true"
+          p:removeAbandonedOnMaintenance="true"
           p:removeAbandonedTimeout="30"
           p:validationQuery="SELECT 1" />
 

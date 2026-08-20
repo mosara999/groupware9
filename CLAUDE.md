@@ -15,6 +15,12 @@ web template. Implemented features: monthly calendar/schedule, e-approval (기�
 - No automated test suite exists (`src/test` is not present); verification is manual, through the running app.
 - No linter/formatter is configured (the project no longer builds via Eclipse; there is no Eclipse project/
   Checkstyle metadata checked in).
+- Dependencies (`build.gradle`) are modernized to their latest release within the Spring 4.x/`javax.*` generation —
+  this is step 1 of a staged Spring 4 → 6 migration; the `javax` → `jakarta` namespace switch and the Spring 5/6
+  jump itself haven't happened yet. `org.apache.poi:poi`/`poi-ooxml` are the one exception, intentionally left at
+  3.14: `gu.common.MakeExcel` drives Excel export through `net.sf.jxls:jxls-core:1.0.6`, an unmaintained (2011-era)
+  library that calls POI 3.x internals directly, so bumping POI without first replacing jxls risks breaking Excel
+  export in a way that can't be verified without a running Tomcat + browser to actually download a file.
 
 ## Build and run
 
@@ -33,14 +39,16 @@ etc.
 
 ### Database setup
 
-MariaDB/MySQL database named `groupware9` is required. Connection settings (driver class, URL, username, password)
-live in `src/main/resources/config/application.yml`, not in the XML — `applicationContext.xml`'s `dataSource` bean
-reads them via `${db.*}` placeholders resolved by a `YamlPropertiesFactoryBean` + `context:property-placeholder`
-(needs `org.yaml:snakeyaml` on the classpath, already in `build.gradle`). Defaults are `root`/`gujc1004` against
-`jdbc:log4jdbc:mysql://localhost/groupware9` (wrapped by `log4jdbc` for SQL logging; swap `db.driverClassName`
-between the plain MySQL driver and `net.sf.log4jdbc.sql.jdbcapi.DriverSpy` as needed). Classic Spring XML bean
-wiring itself (this file, `dispatcher-servlet.xml`, `web.xml`) has no YAML equivalent in vanilla Spring — only the
-externalized values are YAML.
+MariaDB database named `groupware9` is required (JDBC driver is `org.mariadb.jdbc` — MariaDB Connector/J — not the
+MySQL driver, even though the codebase/docs still say "MariaDB/MySQL" since the schema is wire-compatible with
+either). Connection settings (driver class, URL, username, password) live in
+`src/main/resources/config/application.yml`, not in the XML — `applicationContext.xml`'s `dataSource` bean reads
+them via `${db.*}` placeholders resolved by a `YamlPropertiesFactoryBean` + `context:property-placeholder` (needs
+`org.yaml:snakeyaml` on the classpath, already in `build.gradle`). Defaults are `root`/`gujc1004` against
+`jdbc:log4jdbc:mariadb://localhost/groupware9` (wrapped by `log4jdbc` for SQL logging; the real driver behind it is
+`net.sf.log4jdbc.sql.jdbcapi.DriverSpy`, set via `db.driverClassName`). Classic Spring XML bean wiring itself (this
+file, `dispatcher-servlet.xml`, `web.xml`) has no YAML equivalent in vanilla Spring — only the externalized values
+are YAML.
 
 **Docker (recommended):** `docker compose up -d` starts a MariaDB container (`docker-compose.yml`) already matching
 those credentials on `localhost:3306`, and auto-loads `tables.sql`/`tableData.sql` on first start via
