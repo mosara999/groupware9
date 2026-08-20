@@ -10,16 +10,19 @@
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 
     <context:annotation-config/>
-    
+
     <tx:annotation-driven transaction-manager="transactionManager"/>
-    
-    <!-- 
-    p:driverClassName="com.mysql.jdbc.Driver" p:url="jdbc:mysql://localhost/groupware9"   
-	p:driverClassName="net.sf.log4jdbc.sql.jdbcapi.DriverSpy" p:url="jdbc:log4jdbc:mysql://localhost/groupware9"
-	-->
+
+    <!-- DB connection settings live in classpath:config/application.yml, not here. -->
+    <bean id="yamlProperties" class="org.springframework.beans.factory.config.YamlPropertiesFactoryBean">
+        <property name="resources" value="classpath:config/application.yml"/>
+    </bean>
+
+    <context:property-placeholder properties-ref="yamlProperties"/>
+
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"
-		  p:driverClassName="net.sf.log4jdbc.sql.jdbcapi.DriverSpy" p:url="jdbc:log4jdbc:mysql://localhost/groupware9?useUnicode=true&amp;characterEncoding=UTF-8"
-          p:username="root" p:password="gujc1004"
+		  p:driverClassName="${db.driverClassName}" p:url="${db.url}"
+          p:username="${db.username}" p:password="${db.password}"
           p:initialSize="2"
           p:maxActive="30"
           p:maxIdle="10"

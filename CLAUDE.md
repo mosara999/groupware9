@@ -33,10 +33,14 @@ etc.
 
 ### Database setup
 
-MariaDB/MySQL database named `groupware9` is required. `src/main/webapp/WEB-INF/applicationContext.xml` (the
-`dataSource` bean) has hardcoded local credentials — `root`/`gujc1004` against `jdbc:log4jdbc:mysql://localhost/
-groupware9` (wrapped by `log4jdbc` for SQL logging; swap the driver class between the plain MySQL driver and
-`net.sf.log4jdbc.sql.jdbcapi.DriverSpy` as needed, both forms are shown in the comment above the bean).
+MariaDB/MySQL database named `groupware9` is required. Connection settings (driver class, URL, username, password)
+live in `src/main/resources/config/application.yml`, not in the XML — `applicationContext.xml`'s `dataSource` bean
+reads them via `${db.*}` placeholders resolved by a `YamlPropertiesFactoryBean` + `context:property-placeholder`
+(needs `org.yaml:snakeyaml` on the classpath, already in `build.gradle`). Defaults are `root`/`gujc1004` against
+`jdbc:log4jdbc:mysql://localhost/groupware9` (wrapped by `log4jdbc` for SQL logging; swap `db.driverClassName`
+between the plain MySQL driver and `net.sf.log4jdbc.sql.jdbcapi.DriverSpy` as needed). Classic Spring XML bean
+wiring itself (this file, `dispatcher-servlet.xml`, `web.xml`) has no YAML equivalent in vanilla Spring — only the
+externalized values are YAML.
 
 **Docker (recommended):** `docker compose up -d` starts a MariaDB container (`docker-compose.yml`) already matching
 those credentials on `localhost:3306`, and auto-loads `tables.sql`/`tableData.sql` on first start via
