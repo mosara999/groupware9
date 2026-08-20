@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Util4calen {
-    static final Logger LOGGER = LoggerFactory.getLogger(AdminInterceptor.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(Util4calen.class);
     static final String[] dayArr = {"일", "월", "화", "수", "목", "금", "토"};
     
     /**

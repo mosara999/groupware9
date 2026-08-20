@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 public class FileUtil {
-    static final Logger LOGGER = LoggerFactory.getLogger(AdminInterceptor.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(FileUtil.class);
     static final Integer IMG_WIDTH = 100;
     static final Integer IMG_HEIGHT = 100;
     

@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TreeMaker {
-    static final Logger LOGGER = LoggerFactory.getLogger(AdminInterceptor.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(TreeMaker.class);
 
     /**
      * 부모코드를 이용하여 계층형 트리 구성.     

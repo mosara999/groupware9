@@ -24,34 +24,17 @@ public class MemberSvc {
     }
 
     /**
-     * 로그인 검증.
-     * salt가 있으면 salt+SHA-256으로, 레거시(salt 없음) 계정은 salt 없는 SHA-256으로 비교하고
-     * 통과하면 그 자리에서 salt를 발급해 재해시한다(rehash-on-login).
+     * 로그인용 사용자 조회(USERPW/SALT 포함). AppUserDetailsService가 사용한다.
      */
-    public UserVO verifyLogin(LoginVO param) {
-        UserVO userInfo = sqlSession.selectOne("selectMember4Login", param.getUserid());
-        if (userInfo == null) {
-            return null;
-        }
-
-        String salt = userInfo.getSalt();
-        if (salt != null && !salt.isEmpty()) {
-            if (!PasswordUtil.matches(param.getUserpw(), salt, userInfo.getUserpw())) {
-                return null;
-            }
-        } else {
-            if (!PasswordUtil.matchesLegacy(param.getUserpw(), userInfo.getUserpw())) {
-                return null;
-            }
-            rehashPassword(userInfo.getUserno(), param.getUserpw());
-        }
-
-        userInfo.setUserpw(null);
-        userInfo.setSalt(null);
-        return userInfo;
+    public UserVO selectMember4Login(String userid) {
+        return sqlSession.selectOne("selectMember4Login", userid);
     }
 
-    private void rehashPassword(String userno, String rawPw) {
+    /**
+     * 레거시(salt 없음) 계정이 로그인에 성공했을 때 그 자리에서 salt를 발급해 재해시한다
+     * (rehash-on-login). SaltedShaPasswordEncoder가 사용한다.
+     */
+    public void rehashPassword(String userno, String rawPw) {
         String newSalt = PasswordUtil.newSalt();
         UserVO update = new UserVO();
         update.setUserno(userno);

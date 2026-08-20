@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class Upload4ckeditor {
-    static final Logger LOGGER = LoggerFactory.getLogger(AdminInterceptor.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(Upload4ckeditor.class);
 
     /**
      * ckeditor의 이미지 업로드 처리.
