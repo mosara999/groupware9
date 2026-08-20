@@ -1,6 +1,5 @@
 apply plugin: 'java'
 apply plugin: 'war'
-apply plugin: 'eclipse-wtp'
 
 group = 'com.gu'
 version = '1.0'
@@ -12,14 +11,6 @@ compileJava.options.encoding = 'UTF-8'
 
 repositories {
     mavenCentral()
-}
-
-eclipse {
-    wtp {
-        component {
-            contextPath = 'groupware9'
-        }
-    }
 }
 
 dependencies {

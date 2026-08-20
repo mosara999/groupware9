@@ -9,27 +9,27 @@ A Korean-language web-based groupware system (그룹웨어) built on Spring 4 + 
 web template. Implemented features: monthly calendar/schedule, e-approval (기안/결재 documents), internal mail
 (compose/inbox/sent, IMAP import), and a bulletin board system with configurable board groups.
 
-- Java 1.8 source/target compatibility (`build.gradle`), matching the JRE 1.8 configured in the Eclipse classpath.
-  (Originally Maven declared source/target 1.7 while Eclipse actually compiled at 1.8; the project was migrated to
-  Gradle and standardized on 1.8, which also matches the JDK 17 toolchain used to run the Gradle build itself.)
+- Java 1.8 source/target compatibility (`build.gradle`). (Originally Maven declared source/target 1.7 while Eclipse
+  actually compiled at 1.8; the project was migrated to Gradle and standardized on 1.8, which also matches the JDK
+  17 toolchain used to run the Gradle build itself.)
 - No automated test suite exists (`src/test` is not present); verification is manual, through the running app.
-- No linter/formatter is configured beyond an empty Eclipse Checkstyle fileset (`.checkstyle`).
+- No linter/formatter is configured (the project no longer builds via Eclipse; there is no Eclipse project/
+  Checkstyle metadata checked in).
 
 ## Build and run
 
-This is an Eclipse Dynamic Web Project + Gradle project (Gradle Wrapper checked in), normally run inside Eclipse
-with a Tomcat server, not via a Gradle web-app run task (none is configured in `build.gradle`).
+Plain Gradle project (Gradle Wrapper checked in) — no IDE project files are checked in, so any editor/IDE can be
+pointed at it, but building/running goes through Gradle rather than an IDE-managed server.
 
 ```
 ./gradlew compileJava   # compile (gradlew.bat on Windows cmd/PowerShell outside Git Bash)
 ./gradlew war            # build the WAR at build/libs/project9-1.0.war (src/test is absent, so no tests run)
-./gradlew eclipse        # regenerate .project/.classpath/.settings from build.gradle (also fixes WTP context-root)
 ```
 
-To actually run the app: deploy the WAR/exploded project to Tomcat (or run from Eclipse with a configured server),
-then browse to `http://localhost:8080/groupware9/` — the WTP context-root is pinned to `groupware9` explicitly in
-`build.gradle` (`eclipse.wtp.component.contextPath`) since the Gradle project name is `project9`. Default seeded
-logins: `admin/admin`, `user1/user1`, `user2/user2`, etc.
+To actually run the app: deploy the built WAR to a Tomcat instance — e.g. copy `build/libs/project9-1.0.war` into
+Tomcat's `webapps/` as `groupware9.war` (Tomcat derives the context path from the deployed file/folder name) — then
+browse to `http://localhost:8080/groupware9/`. Default seeded logins: `admin/admin`, `user1/user1`, `user2/user2`,
+etc.
 
 ### Database setup
 
