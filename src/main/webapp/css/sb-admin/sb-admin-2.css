@@ -511,6 +511,14 @@ _div {border:1px solid #cccccc}
 	margin-top: 10px; 
 }	
 
+.calendarPanel {
+	background-color: #FFFFFF;
+	border: 1px solid #E3E3E0;
+	border-radius: 8px;
+	overflow: hidden;
+	margin-bottom: 16px;
+}
+
 .calendarRow {
 	border-spacing: 1px;
 	display: table;
@@ -521,24 +529,30 @@ _div {border:1px solid #cccccc}
 	display: table-cell;
     width: 14.2857%;
     max-width: 0;
-    padding: 1px;
+    padding: 4px;
 	min-height: 150px;
 	height: 150px;
 	margin: 1px;
-	border: 1px solid gray;
+	border: 1px solid #E3E3E0;
 	vertical-align: top;
+	transition: background-color 0.15s ease;
+}
+.calendarColumnBox:hover {
+	background-color: #F7F7F5;
 }
 
 .calendarColumnHead{
 	display: table-cell;
     width: 14.2857%;
-    padding: 1px;
+    padding: 8px 1px;
 	margin: 1px;
-	border: 1px solid gray;
+	border: 1px solid #E3E3E0;
 	text-align:center;
 	height: 30px;
-	background-color: #f5f5f5;
-	font-weight: bold;
+	background-color: #F7F7F5;
+	color: #9B9A97;
+	font-weight: 600;
+	font-size: 13px;
 }
 
 .calendarColumnDay{
@@ -548,31 +562,47 @@ _div {border:1px solid #cccccc}
 	text-align:right;
 	height: 25px;
 	font-weight: bold;
+	color: #37352F;
 	padding-right: 10px;
 }
 
 .calendarColumnSunDay,
 .calendarColumnSunDay a{
-	color: red;
+	color: #EB5757;
 }
-	
+
 .calendarDay{
 	display: inline-block;
 	float:left;
-    width: 98%;
+    width: 94%;
 	text-align:left;
-	height: 25px;
+	height: 22px;
+	line-height: 20px;
 	overflow: hidden;
-	padding-left: 2px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	margin: 1px 0;
+	padding: 0 4px;
+	border-radius: 4px;
+	background-color: #F1F1EF;
+	transition: background-color 0.15s ease;
+}
+.calendarDay:hover {
+	background-color: #E3E3E0;
+}
+.calendarDay a {
+	color: #37352F;
+	text-decoration: none;
 }
 
 
 
-.calendarTooltip{ 
+.calendarTooltip{
 	display: none;
-	position: absolute; 
-	border-radius: .4em; 
-	_border: 1px solid;
+	position: absolute;
+	background-color: #FFFFFF;
+	border: 1px solid #E3E3E0;
+	border-radius: .4em;
 	width: 400px;
 	font-size: 11px;
 }
