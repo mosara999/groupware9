@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="row(listitem, listitemNo)"
+          th:with="hasFile=${listitem.filecnt != null and !#strings.isEmpty(listitem.filecnt) and T(java.lang.Integer).parseInt(listitem.filecnt) > 0},
+                   hasReply=${listitem.replycnt != null and !#strings.isEmpty(listitem.replycnt) and T(java.lang.Integer).parseInt(listitem.replycnt) > 0}">
+
+	<div class="listBody">
+		<div class="listHiddenField pull-left field60">
+			<span th:if="${listitemNo != null}" th:text="${listitemNo}"></span>
+			<i th:if="${listitemNo == null}" class="fa fa-bell-o fa-fw"></i>
+		</div>
+
+		<div class="listHiddenField pull-right field60">
+			<i th:if="${hasFile}" class="fa fa-download fa-fw" th:title="${listitem.filecnt}"></i>
+		</div>
+		<div class="listHiddenField pull-right field60 textCenter" th:text="${listitem.brdhit}"></div>
+		<div class="listHiddenField pull-right field100 textCenter" th:text="${listitem.brddate}"></div>
+		<div class="listHiddenField pull-right field100 textCenter"><a th:href="@{list4User(userno=${listitem.userno})}" th:text="${listitem.brdwriter}"></a></div>
+		<div class="listTitle" th:title="${listitem.brdtitle}">
+			<a th:href="@{boardRead(bgno=${listitem.bgno},brdno=${listitem.brdno})}" th:class="${listitem.brdnotice == 'Y'} ? 'notice' : null" th:text="${listitem.brdtitle}"></a>
+			<span th:if="${hasReply}" th:text="|(${listitem.replycnt})|"></span>
+		</div>
+		<div class="showField text-muted small">
+			<span th:text="${listitem.brdwriter}"></span>
+			<span th:text="${listitem.brddate}"></span>
+			<i class="fa fa-eye fa-fw"></i> <span th:text="${listitem.brdhit}"></span>
+			<i th:if="${hasFile}" class="fa fa-download fa-fw" th:title="${listitem.filecnt}"></i>
+		</div>
+	</div>
+
+</th:block>
+</body>
+</html>

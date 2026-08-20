@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="paging">
+<div th:if="${searchVO.totPage != null and searchVO.totPage > 1}">
+
+	<div id="dataTables-example_paginate" class="dataTables_paginate paging_simple_numbers">
+		<ul class="pagination">
+			<li title="First" th:class="${searchVO.page == 1} ? 'paginate_button disabled' : 'paginate_button'" onclick="fnSubmitForm(1)"><a href="#"><i class="fa fa-angle-double-left fa-fw"></i> </a></li>
+			<li title="Previous" th:class="${searchVO.page == 1} ? 'paginate_button disabled' : 'paginate_button'" th:onclick="|fnSubmitForm(${searchVO.page - 1})|"><a href="#"><i class="fa fa-angle-left  fa-fw"></i> </a></li>
+
+			<th:block th:each="i : ${#numbers.sequence(searchVO.pageStart, searchVO.pageEnd)}">
+				<li th:if="${i == searchVO.page}" class="paginate_button active"><a href="#" th:text="${i}"></a></li>
+				<li th:unless="${i == searchVO.page}" class="paginate_button" th:onclick="|fnSubmitForm(${i})|"><a href="#" th:text="${i}"></a></li>
+			</th:block>
+
+			<li title="Next" th:class="${searchVO.page == searchVO.totPage} ? 'paginate_button disabled' : 'paginate_button'" th:onclick="|fnSubmitForm(${searchVO.page + 1})|"><a href="#"><i class="fa fa-angle-right  fa-fw"></i></a></li>
+			<li title="Last" th:class="${searchVO.page == searchVO.totPage} ? 'paginate_button disabled' : 'paginate_button'" th:onclick="|fnSubmitForm(${searchVO.totPage})|"><a href="#"><i class="fa fa-angle-double-right  fa-fw"></i></a></li>
+		</ul>
+	</div>
+	<input type="hidden" name="page" id="page" value="" />
+
+	<script type="text/javascript">
+	function fnSubmitForm(page){
+		document.form1.page.value=page;
+		document.form1.submit();
+	}
+	</script>
+</div>
+</th:block>
+</body>
+</html>
