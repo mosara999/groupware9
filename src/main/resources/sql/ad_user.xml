@@ -32,8 +32,8 @@
     </select> 
    
     <insert id="insertUser" parameterType="gu.member.UserVO" >
-        INSERT INTO COM_USER(USERID, USERNM, USERPW, USERROLE, PHOTO, DEPTNO, DELETEFLAG)
-        VALUES (#{userid}, #{usernm}, SHA2(#{userpw}, 256), #{userrole}, #{photo}, #{deptno}, 'N')
+        INSERT INTO COM_USER(USERID, USERNM, USERPW, SALT, USERROLE, PHOTO, DEPTNO, DELETEFLAG)
+        VALUES (#{userid}, #{usernm}, #{userpw}, #{salt}, #{userrole}, #{photo}, #{deptno}, 'N')
     </insert>
     
     <update id="updateUser" parameterType="gu.member.UserVO">
@@ -60,9 +60,16 @@
     <select id="selectUserOne" parameterType="String" resultType="gu.member.UserVO">
         SELECT USERNO, USERID, USERNM, USERPW, USERROLE, PHOTO, DEPTNO
           FROM COM_USER
-         WHERE DELETEFLAG='N' 
+         WHERE DELETEFLAG='N'
            AND USERNO=#{userno}
-    </select> 
+    </select>
+
+    <select id="selectUserPasswordByUserno" parameterType="String" resultType="gu.member.UserVO">
+        SELECT USERPW, SALT
+          FROM COM_USER
+         WHERE DELETEFLAG='N'
+           AND USERNO=#{userno}
+    </select>
     
     <delete id="deleteUser" parameterType="String">
         UPDATE COM_USER
@@ -72,9 +79,10 @@
     
     <update id="updateUserPassword" parameterType="gu.member.UserVO">
         UPDATE COM_USER
-           SET USERPW=SHA2(#{userpw}, 256)
-         WHERE USERNO=#{userno} 
-    </update> 
+           SET USERPW=#{userpw}
+             , SALT=#{salt}
+         WHERE USERNO=#{userno}
+    </update>
         
 </mapper>
 

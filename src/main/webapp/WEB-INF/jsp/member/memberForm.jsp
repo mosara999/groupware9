@@ -58,30 +58,34 @@ function fn_formSubmit(){
 } 
 
 function fn_changePW() {
-	$("#userpw").val("");	
-	$("#userpw2").val("");	
+	$("#curpw").val("");
+	$("#userpw").val("");
+	$("#userpw2").val("");
 	$('#myModal').modal("show");
 }
 function fn_changePWSave() {
+	if ( ! chkInputValue("#curpw", "<s:message code="common.curPassword"/>")) return false;
 	if ( ! chkInputValue("#userpw", "<s:message code="common.password"/>")) return false;
 	if ( ! chkInputValue("#userpw2", "<s:message code="common.passwordRe"/>")) return false;
 	if ( $("#userpw").val() !== $("#userpw2").val()){
 		alert("<s:message code="msg.err.noMatchPW"/>");
 		return false;
 	}
-	
+
 	$.ajax({
 		url: "changePWSave",
-		type:"post", 
-		data : {userpw:$("#userpw").val()},
+		type:"post",
+		data : {curpw:$("#curpw").val(), userpw:$("#userpw").val()},
 		success: function(result){
 			if (result==="OK") {
 				alert("<s:message code="msg.changeComplete"/>");
+				$("#myModal").modal("hide");
+			} else {
+				alert("<s:message code="msg.err.noMatchPW"/>");
 			}
 		}
-	})		
-	$("#myModal").modal("hide");	
-}	
+	})
+}
 </script>    
 </head>
 
@@ -152,11 +156,17 @@ function fn_changePWSave() {
     			</div> 
     			<div class="modal-body">
                    	<div class="row form-group">
+                    	<div class="col-lg-4"><label><s:message code="common.curPassword"/></label></div>
+                        <div class="col-sm-8">
+                        	<input type="password" class="form-control" id="curpw" name="curpw" maxlength="20">
+                        </div>
+                    </div>
+                   	<div class="row form-group">
                     	<div class="col-lg-4"><label><s:message code="common.password"/></label></div>
                         <div class="col-sm-8">
                         	<input type="password" class="form-control" id="userpw" name="userpw" maxlength="20">
                         </div>
-                    </div>    			 
+                    </div>
                    	<div class="row form-group">
                     	<div class="col-lg-4"><label><s:message code="common.passwordRe"/></label></div>
                         <div class="col-sm-8">

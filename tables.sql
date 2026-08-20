@@ -24,7 +24,8 @@ CREATE TABLE COM_USER(
   USERNO 	INT(11) NOT NULL AUTO_INCREMENT,	-- 사용자 번호
   USERID 	VARCHAR(20),                    	-- ID
   USERNM 	VARCHAR(20),                    	-- 이름
-  USERPW 	VARCHAR(100),                    	-- 비밀번호
+  USERPW 	VARCHAR(100),                    	-- 비밀번호 (salt+SHA-256)
+  SALT		VARCHAR(32),                    	-- 비밀번호 salt
   USERROLE	CHAR(1),                    		-- 권한
   PHOTO 	VARCHAR(50),                   		-- 사진
   DEPTNO	INT,

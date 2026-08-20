@@ -19,12 +19,12 @@
          LIMIT ${rowStart-1}, 10
     </select> 
 
-    <select id="selectMember4Login" parameterType="gu.member.LoginVO" resultType="gu.member.UserVO" >
-        SELECT USERNO, USERID, USERNM, USERROLE
+    <select id="selectMember4Login" parameterType="String" resultType="gu.member.UserVO" >
+        SELECT USERNO, USERID, USERNM, USERROLE, USERPW, SALT
           FROM COM_USER CU
-         WHERE CU.DELETEFLAG='N' 
-           AND CU.USERID = #{userid} AND USERPW=SHA2(#{userpw}, 256)
-    </select> 
+         WHERE CU.DELETEFLAG='N'
+           AND CU.USERID = #{userid}
+    </select>
     
     <insert id="insertLogIn" parameterType="String">
     	INSERT INTO COM_LOGINOUT (USERNO, LTYPE, LDATE)

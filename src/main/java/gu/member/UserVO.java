@@ -6,6 +6,7 @@ public class UserVO {
     private String userno;
     private String userid;
     private String userpw;
+    private String salt;
     private String usernm;
     private String photo;
     private String userrole;
@@ -33,6 +34,14 @@ public class UserVO {
 
     public void setUserpw(String userpw) {
         this.userpw = userpw;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 
     public String getUserno() {

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import gu.admin.organ.UserSvc;
 import gu.common.FileUtil;
@@ -64,10 +65,16 @@ public class MemberCtr {
      * 비밀번호 변경.
      */
     @RequestMapping(value = "/changePWSave")
-    public void changePWSave(HttpServletRequest request, HttpServletResponse response, UserVO userInfo) {
+    public void changePWSave(HttpServletRequest request, HttpServletResponse response,
+            @RequestParam("curpw") String curpw, UserVO userInfo) {
         String userno = request.getSession().getAttribute("userno").toString();
+
+        if (!userSvc.verifyPassword(userno, curpw)) {
+            UtilEtc.responseJsonValue(response, "FAIL");
+            return;
+        }
+
         userInfo.setUserno(userno);
-        
         userSvc.updateUserPassword(userInfo);
 
         UtilEtc.responseJsonValue(response,"OK");

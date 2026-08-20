@@ -38,7 +38,7 @@ public class LoginCtr {
     @RequestMapping(value = "memberLoginChk")
     public String memberLoginChk(HttpServletRequest request,HttpServletResponse response, LoginVO loginInfo, ModelMap modelMap) {
 
-        UserVO mdo = memberSvc.selectMember4Login(loginInfo);
+        UserVO mdo = memberSvc.verifyLogin(loginInfo);
         
         if (mdo  ==  null) {
             modelMap.addAttribute("msg", "로그인 할 수 없습니다.");
